@@ -7,7 +7,7 @@ import "../styles/Carousel.scss";
 let instanceCount = 0;
 
 const Carousel = ({
-  descriptionTitle = 'Title',
+  descriptionTitle = "Title",
   slides = [],
   onlyImages = true,
   cellsToShow = 1,
@@ -34,6 +34,12 @@ const Carousel = ({
   const ariaLiveRef = useRef(null);
   const slideRefs = useRef([]);
 
+  const announce = (text) => {
+    if (ariaLive && ariaLiveRef?.current) {
+      ariaLiveRef.current.textContent = text;
+    }
+  }
+
   // Track how many instances of the component are on the page
   useEffect(() => {
     instanceCount += 1;
@@ -50,28 +56,15 @@ const Carousel = ({
   }, []);
 
   // Trigger the onTranssionEvent callback when relevant values change
+  /* prettier-ignore */
   useEffect(() => {
     if (onTranssionEvent) {
-      onTranssionEvent({
-        slides,
-        currentSlide,
-        count,
-        stopAfter,
-        gridView,
-        isFocused,
-      });
+      onTranssionEvent({ slides, currentSlide, count, stopAfter, gridView, isFocused });
     }
-  }, [
-    slides,
-    currentSlide,
-    count,
-    stopAfter,
-    gridView,
-    isFocused,
-    onTranssionEvent,
-  ]);
+  }, [slides, currentSlide, count, stopAfter, gridView, isFocused, onTranssionEvent]);
 
   // Slide change logic with autoplay and counting
+  /* prettier-ignore */
   useEffect(() => {
     let intervalId;
     if (isPlaying && !gridView) {
@@ -81,6 +74,7 @@ const Carousel = ({
           const newCount = prevCount + 1;
           if (newCount >= stopAfter) {
             setIsPlaying(false); // Stop autoplay after 100 transitions
+            announce(`Carousel for ${descriptionTitle} Stopped`);
           }
           return newCount;
         });
@@ -88,7 +82,7 @@ const Carousel = ({
     }
 
     return () => clearInterval(intervalId);
-  }, [isPlaying, gridView, stopAfter, slides.length, slideDelayInt]);
+  }, [isPlaying, gridView, stopAfter, slides.length, slideDelayInt, announce, descriptionTitle]);
 
   // Announce slide changes for aria-live
   useEffect(() => {
@@ -130,11 +124,15 @@ const Carousel = ({
 
   // Play, Pause, and Stop controls
   const handlePlay = (event) => {
+    announce(`Carousel for ${descriptionTitle} Play`);
     setIsPlaying(true);
-  }
+
+    if(count >= stopAfter) setCount(1)
+  };
   const handlePause = (event) => {
     setIsPlaying(false);
-    if (event._reactName === "onMouseEnter") return;
+    announce(`Carousel for ${descriptionTitle} Stopped`);
+    if (event?._reactName === "onMouseEnter") return;
 
     if (resetOnStop) {
       setCurrentSlide(0);
