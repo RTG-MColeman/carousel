@@ -14,7 +14,7 @@ const Carousel = ({
   ariaLive = true,
   isGridView = false,
   showGridButton = true,
-  autoplay = false,
+  autoPlay = false,
   stopAfter = 100,
   slideDelayInt = 3,
   showControls = true,
@@ -26,7 +26,7 @@ const Carousel = ({
   const uniqueId = useId(); // Automatically generates a unique ID
   const [isFirstInstance, setIsFirstInstance] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(autoplay);
+  const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [gridView, setGridView] = useState(isGridView);
   const [isFocused, setIsFocused] = useState(false);
   const [count, setCount] = useState(0);
@@ -76,7 +76,7 @@ const Carousel = ({
     }
   }, [slides, currentSlide, count, stopAfter, gridView, isFocused, onTranssionEvent]);
 
-  // Slide change logic with autoplay and counting
+  // Slide change logic with autoPlay and counting
   /* prettier-ignore */
   useEffect(() => {
     let intervalId;
@@ -86,7 +86,7 @@ const Carousel = ({
         setCount((prevCount) => {
           const newCount = prevCount + 1;
           if (newCount >= stopAfter) {
-            setIsPlaying(false); // Stop autoplay after 100 transitions
+            setIsPlaying(false); // Stop autoPlay after 100 transitions
             announce(`Carousel for ${descriptionTitle} Stopped`);
           }
           return newCount;
@@ -357,9 +357,9 @@ Carousel.propTypes = {
   ariaLive: PropTypes.bool, // default: true - 508 Announce slide change
   isGridView: PropTypes.bool, // default: false - Turns slides into top stacked content on load
   showGridButton: PropTypes.bool, // default: true - Show toggle for stacked content or carousel
-  autoplay: PropTypes.bool, // default: true - Play slides on load
+  autoPlay: PropTypes.bool, // default: true - Play slides on load
   stopAfter: PropTypes.number, // default: 100 - Used to prevent the carousel from transsioning forever
-  slideDelayInt: PropTypes.number, // default: 3 - Delay in seconds for autoplay
+  slideDelayInt: PropTypes.number, // default: 3 - Delay in seconds for autoPlay
   showControls: PropTypes.bool, // default: true - Show Play, Pause, Stop controls
   showSlideDots: PropTypes.bool, // default: true - Show the slide dot navigation
   showPrevNext: PropTypes.bool, // default: true - Show Previous / Next Buttons

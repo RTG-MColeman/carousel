@@ -27,15 +27,6 @@ $dot-size: 8px;
     position: relative;
     top: 20px;
 
-    img {
-      -webkit-user-drag: none;
-      user-drag: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-
     // Each slide in the carousel
     .carousel-slide {
       position: absolute;
