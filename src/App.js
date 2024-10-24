@@ -49,8 +49,8 @@ function App() {
         ariaLive={true} // 508 Announce slide change
         isGridView={false} // Turns slides into top stacked content on load
         showGridButton={true} // Show toggle for stacked content or carousel
-        autoplay={true} // Play slides on load
-        stopAfter={2} // Stop slider after {x} only valid when autoplay=true
+        autoPlay={true} // Play slides on load
+        stopAfter={2} // Stop slider after {x} only valid when autoPlay=true
         slideDelayInt={3} // Change slides every 3 seconds
         showControls={true} // Show Play, Pause, Stop controls
         showPrevNext={true} // Show Previous / Next Buttons
@@ -65,11 +65,11 @@ function App() {
           // console.log("slides:%c %o %c // Full object of the data used to build the slides", "background-color: #f00; color: #fff", slides, "color: #0f0")
           // console.table(slides)
           // console.log("currentSlide:%c %s %c // Current active slide index - array[index]", "background-color: #f00; color: #fff", currentSlide, "color: #0f0")
-          // console.log("count:%c %s %c // Count of the slider's transsion during autoplay", "background-color: #f00; color: #fff", count, "color: #0f0")
-          // console.log("\tOnly used when 'autoplay' prop is 'true'")
+          // console.log("count:%c %s %c // Count of the slider's transsion during autoPlay", "background-color: #f00; color: #fff", count, "color: #0f0")
+          // console.log("\tOnly used when 'autoPlay' prop is 'true'")
           // console.log("\tWorks with the 'stopAfer' prop to prevent the carousel from looping forever")
           // console.log("stopAfter:%c %s %c // Total times slider will transsion before stopping", "background-color: #f00; color: #fff", stopAfter, "color: #0f0")
-          // console.log("\tOnly used when 'autoplay' prop is 'true'")
+          // console.log("\tOnly used when 'autoPlay' prop is 'true'")
           // console.log("gridView:%c %s %c // Bool to check if slider has been switched to grid view", "background-color: #f00; color: #fff", gridView, "color: #0f0")
           // console.log("\tWill disable 'count' & 'stopAfter' exposed variables in this function")
           // console.log("isFocused:%c %s %c // Is a slide currently focused?", "background-color: #f00; color: #fff", isFocused, "color: #0f0")
@@ -88,7 +88,7 @@ function App() {
         ariaLive={true} // 508 Announce slide change
         isGridView={false} // Turns slides into top stacked content on load
         showGridButton={true} // Show toggle for stacked content or carousel
-        autoplay={true} // Play slides on load
+        autoPlay={true} // Play slides on load
         slideDelayInt={3} // Change slides every 3 seconds
         showControls={true} // Show Play, Pause, Stop controls
         showPrevNext={true} // Show Previous / Next Buttons

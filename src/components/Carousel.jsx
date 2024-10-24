@@ -49,6 +49,9 @@ const Carousel = ({
     },
     [ariaLive, ariaLiveRef]
   );
+  const disableForGrid = () => {
+    if (gridView) return;
+  }
 
   // Track how many instances of the component are on the page
   useEffect(() => {
@@ -134,7 +137,7 @@ const Carousel = ({
 
   // Play, Pause, and Stop controls
   const handlePlay = (event) => {
-    if (isGridView) return;
+    disableForGrid(); // Disable play in gridView
 
     preventEvent(event, "onMouseLeave", true);
 
@@ -145,7 +148,7 @@ const Carousel = ({
   };
 
   const handlePause = (event) => {
-    if (isGridView) return;
+    disableForGrid(); // Disable pause in gridView
 
     setIsPlaying(false);
     announce(`Carousel for ${descriptionTitle} Stopped`);
@@ -170,7 +173,7 @@ const Carousel = ({
   };
 
   const handleKeyDown = (event) => {
-    if (gridView) return; // Disable keydown in gridView
+    disableForGrid(); // Disable keydown in gridView
 
     let newSlide;
     const setSlideDelay = (newSlide) => {
@@ -206,20 +209,20 @@ const Carousel = ({
 
   // Handle next and previous slide actions
   const handleNext = () => {
-    if (gridView) return; // Disable next in gridView
+    disableForGrid(); // Disable next in gridView
     setIsPlaying(false);
     setCurrentSlide((currentSlide + 1) % slides.length);
   };
 
   const handlePrev = () => {
-    if (gridView) return; // Disable prev in gridView
+    disableForGrid(); // Disable prev in gridView
     setIsPlaying(false);
     setCurrentSlide((currentSlide - 1 + slides.length) % slides.length);
   };
 
   // Handle dot click to navigate to specific slide
   const handleDotClick = (index) => {
-    if (gridView) return; // Disable dot click in gridView
+    disableForGrid(); // Disable dot click in gridView
     setIsPlaying(false);
     setCurrentSlide(index);
   };

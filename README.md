@@ -1,4 +1,35 @@
-# Getting Started with Create React App
+# RTG-Carousel
+
+This project was created to correct several issues with accessibility when carousels are used. Some of the main features this build corrects are:
+
+- [x] Easy SEO interjection function with exposed variables using the 'onTranssionEvent' prop
+- [x] Prop Controled UI features
+    - [x] 'onlyImages' Used to create slides of a11y compliant banners
+    - [ ] 'cellsToShow' Used when showing multiple HTML tiles
+    - [x] 'ariaLive' Renders a container for announcing slide transissions (only works with 'autoPlay')
+    - [ ] 'isGridView' HTML slide containers that do not 'autoPlay'
+    - [x] 'showGridButton' Will turn banner sliders into stacked images for easy viewing
+    - [x] 'autoPlay' Option to have the carousel auto play slides or not
+    - [x] 'stopAfter' Option to turn off 'autoPlay' after {x} number of slides
+    - [x] 'slideDelayInt' A whole number in seconds to show each slide
+    - [x] 'showControls' Turn on/off display of Play/Pause/Prev/Next/Dots
+    - [x] 'showSlideDots' Turn on/off Dots navigation
+    - [x] 'showPrevNext' Turn on/off Previous/Next navigation
+    - [x] 'resetOnStop' When stop button is pressed resets slide back to first slide
+- [x] Autoplay is not forver. Prop created for 'stopAfter = 100' default value can change
+- [x] Keyboard navigation including
+    - [x] Auto Stop 'onFocus' of current slide
+    - [x] Navigation Previous / Next slides with Left / Right arrow keys (when active slide is focused)
+    - [x] Structured tab higharchy controled with 'tabindex'
+        - [x] Button - 1st: "Switch to Grid View"
+        - [x] Anchor.active - 2nd: "Currently visible slide -aka- "Active"
+        - [x] Button - 3rd: "Stop / Play" toggle
+        - [x] Button - 4th: "Previous Slide" 
+        - [x] Button - 5th: "Dot Navigation" dot count per slide index
+        - [x] Button - 6th: "Next Slide"
+    - [x] - All navigation controls active with 'spacebar' or 'enter' keys
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -40,31 +71,3 @@ Instead, it will copy all the configuration files and the transitive dependencie
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
 ## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
