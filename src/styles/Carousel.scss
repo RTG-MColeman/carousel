@@ -1,5 +1,6 @@
 // Variables
-$primary-color: rgb(0, 83, 160);
+$primary-color: #0053a0;
+$primary-color-dim: #d1dced;
 $control-padding: 10px 20px;
 $dot-size: 8px;
 
@@ -77,15 +78,7 @@ $dot-size: 8px;
     .grid-item img {
       width: 100%;
       height: auto;
-      object-fit: contain;
-
-      -webkit-user-drag: none;
-      user-drag: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    
+      object-fit: contain;   
     }
   }
 
@@ -117,10 +110,8 @@ $dot-size: 8px;
     overflow: hidden;
 
     .carousel-dot {
-      color: $primary-color;
-      background: $primary-color;
-      opacity: 0.2;
-      transition: opacity 0.2s, transform 0.2s;
+      color: $primary-color-dim;
+      background: $primary-color-dim;
       width: $dot-size;
       height: $dot-size;
       cursor: pointer;
@@ -128,7 +119,8 @@ $dot-size: 8px;
       list-style-type: none;
 
       &.active {
-        opacity: 1;
+        color: $primary-color;
+        background: $primary-color;
         transform: scale(1.25);
       }
 
