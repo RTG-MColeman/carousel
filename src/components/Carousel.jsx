@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useId } from "react";
+import React, { useState, useEffect, useRef, useCallback, useId } from "react";
 import PropTypes from "prop-types";
 import { ImageSlide, NextPrevControls, taskDone } from "./CarouselComps";
 import "../styles/Carousel.scss";
@@ -34,11 +34,21 @@ const Carousel = ({
   const ariaLiveRef = useRef(null);
   const slideRefs = useRef([]);
 
-  const announce = (text) => {
-    if (ariaLive && ariaLiveRef?.current) {
-      ariaLiveRef.current.textContent = text;
+  const preventEvent = (e, reactName, useCount = false) => {
+    if (useCount) {
+      if (count >= stopAfter && e?._reactName === reactName) return;
+    } else {
+      if (e?._reactName === reactName) return;
     }
-  }
+  };
+  const announce = useCallback(
+    (text) => {
+      if (ariaLive && ariaLiveRef?.current) {
+        ariaLiveRef.current.textContent = text;
+      }
+    },
+    [ariaLive, ariaLiveRef]
+  );
 
   // Track how many instances of the component are on the page
   useEffect(() => {
@@ -124,15 +134,22 @@ const Carousel = ({
 
   // Play, Pause, and Stop controls
   const handlePlay = (event) => {
+    if (isGridView) return;
+
+    preventEvent(event, "onMouseLeave", true);
+
     announce(`Carousel for ${descriptionTitle} Play`);
     setIsPlaying(true);
 
-    if(count >= stopAfter) setCount(1)
+    if (count >= stopAfter) setCount(1);
   };
+
   const handlePause = (event) => {
+    if (isGridView) return;
+
     setIsPlaying(false);
     announce(`Carousel for ${descriptionTitle} Stopped`);
-    if (event?._reactName === "onMouseEnter") return;
+    preventEvent(event, "onMouseEnter");
 
     if (resetOnStop) {
       setCurrentSlide(0);

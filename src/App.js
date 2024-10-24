@@ -50,12 +50,12 @@ function App() {
         isGridView={false} // Turns slides into top stacked content on load
         showGridButton={true} // Show toggle for stacked content or carousel
         autoplay={true} // Play slides on load
-        stopAfter={15} // Stop slider after {x} only valid when autoplay=true
+        stopAfter={2} // Stop slider after {x} only valid when autoplay=true
         slideDelayInt={3} // Change slides every 3 seconds
         showControls={true} // Show Play, Pause, Stop controls
         showPrevNext={true} // Show Previous / Next Buttons
         showSlideDots={true} // Show the slide dot navigation
-        resetOnStop={true} // Stop on current slide | reset to first
+        resetOnStop={false} // Stop on current slide | reset to first
 
         onTranssionEvent={({ slides, currentSlide, count, stopAfter, gridView, isFocused }) => {
           // Perform any SEO-related tasks / analytics or additional functions you would like to apply

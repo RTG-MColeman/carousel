@@ -38,10 +38,14 @@ export const ImageSlide = ({
       href={slide.href}
       tabIndex={gridView ? null : isActive ? null : "-1"}
       onMouseEnter={(event) => {
-        handlePause(event)
+        if (!gridView) {
+          handlePause(event);
+        }
       }}
       onMouseLeave={(event) => {
-        handlePlay(event)
+        if (!gridView) {
+          handlePlay(event);
+        }
       }}
       onMouseDown={(event) => {
         // Set mouseDown to true when the mouse is pressed
