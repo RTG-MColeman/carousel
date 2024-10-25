@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useId } from "react";
 import PropTypes from "prop-types";
 import { ImageSlide, NextPrevControls, taskDone } from "./CarouselComps";
 import { useCarouselControl } from "./CarouselContext";
+
 import "../styles/Carousel.scss";
 
 // Track component instances globally
@@ -27,16 +28,22 @@ const Carousel = ({
   const uniqueId = useId(); // Automatically generates a unique ID
   const [isFirstInstance, setIsFirstInstance] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { isGlobalPaused, incrementInstanceCount, decrementInstanceCount } = useCarouselControl();
-  const [isPlaying, setIsPlaying] = useState(autoPlay);
+  const {
+    isGlobalPaused,
+    isGlobalGridView,
+    incrementInstanceCount,
+    decrementInstanceCount,
+    toggleInstanceActiveStatus,
+  } = useCarouselControl();
+
   const [gridView, setGridView] = useState(isGridView);
+  const [isPlaying, setIsPlaying] = useState(autoPlay && !isGlobalPaused);
+
   const [isFocused, setIsFocused] = useState(false);
   const [count, setCount] = useState(0);
   const slideContainer = useRef(null);
   const ariaLiveRef = useRef(null);
   const slideRefs = useRef([]);
-
-  
 
   const preventEvent = (e, reactName, useCount = false) => {
     if (useCount) {
@@ -55,23 +62,36 @@ const Carousel = ({
   );
   const disableForGrid = () => {
     if (gridView) return;
-  }
+  };
 
   // Register carousels based on gridView
   useEffect(() => {
-    if (!gridView) incrementInstanceCount();
+    incrementInstanceCount();
 
+    // Clean up by decrementing on unmount
     return () => {
-      if (!gridView) decrementInstanceCount();
+      decrementInstanceCount();
     };
-  }, [incrementInstanceCount, decrementInstanceCount, gridView]);
-
+  }, [incrementInstanceCount, decrementInstanceCount]);
+  // Respond to global grid view toggle
   useEffect(() => {
-    if (isGlobalPaused) setIsPlaying(false);
-    else if (autoPlay) setIsPlaying(true);
+    setGridView(isGlobalGridView);
+    toggleInstanceActiveStatus(!isGlobalGridView); // Update active status based on grid view
+  }, [isGlobalGridView, toggleInstanceActiveStatus]);
+
+  // Respond to global pause state
+  useEffect(() => {
+    if (isGlobalPaused) {
+      setIsPlaying(false); // Pause if globally paused
+    } else if (autoPlay) {
+      setIsPlaying(true); // Resume autoplay if globally resumed
+    }
   }, [isGlobalPaused, autoPlay]);
 
-
+  // Pause or resume play based on global pause status
+  useEffect(() => {
+    setIsPlaying(!isGlobalPaused && !gridView);
+  }, [isGlobalPaused, gridView]);
 
   // Track how many instances of the component are on the page
   useEffect(() => {
@@ -222,9 +242,13 @@ const Carousel = ({
     }
   };
 
-  // Toggle between carousel and grid views
+  // Toggle between carousel and grid views and update the active status
   const toggleGridView = () => {
-    setGridView((prev) => !prev);
+    setGridView((prev) => {
+      const newGridView = !prev;
+      toggleInstanceActiveStatus(!newGridView); // Update active status in global context
+      return newGridView;
+    });
   };
 
   // Handle next and previous slide actions

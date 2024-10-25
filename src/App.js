@@ -1,7 +1,7 @@
 import React from "react";
 import { CarouselProvider } from "./components/CarouselContext";
 import Carousel from "./components/Carousel";
-import GlobalPauseButton from "./components/GlobalPauseButton";
+import GlobalCarouselControls from "./components/GlobalCarouselControls";
 
 function App() {
   const livingRoomPromos = [
@@ -48,7 +48,7 @@ function App() {
 
   return (
     <CarouselProvider>
-      <GlobalPauseButton />
+      <GlobalCarouselControls />
 
       <div className="App">
         <Carousel
@@ -60,7 +60,7 @@ function App() {
           isGridView={false} // Turns slides into top stacked content on load
           showGridButton={true} // Show toggle for stacked content or carousel
           autoPlay={true} // Play slides on load
-          stopAfter={2} // Stop slider after {x} only valid when autoPlay=true
+          stopAfter={25} // Stop slider after {x} only valid when autoPlay=true
           slideDelayInt={3} // Change slides every 3 seconds
           showControls={true} // Show Play, Pause, Stop controls
           showPrevNext={true} // Show Previous / Next Buttons
