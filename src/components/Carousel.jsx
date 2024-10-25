@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useId } from "react";
 import PropTypes from "prop-types";
 import { ImageSlide, NextPrevControls, taskDone } from "./CarouselComps";
+import { useCarouselControl } from "./CarouselContext";
 import "../styles/Carousel.scss";
 
 // Track component instances globally
@@ -26,6 +27,7 @@ const Carousel = ({
   const uniqueId = useId(); // Automatically generates a unique ID
   const [isFirstInstance, setIsFirstInstance] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { isGlobalPaused, incrementInstanceCount, decrementInstanceCount } = useCarouselControl();
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [gridView, setGridView] = useState(isGridView);
   const [isFocused, setIsFocused] = useState(false);
@@ -33,6 +35,8 @@ const Carousel = ({
   const slideContainer = useRef(null);
   const ariaLiveRef = useRef(null);
   const slideRefs = useRef([]);
+
+  
 
   const preventEvent = (e, reactName, useCount = false) => {
     if (useCount) {
@@ -52,6 +56,22 @@ const Carousel = ({
   const disableForGrid = () => {
     if (gridView) return;
   }
+
+  // Register carousels based on gridView
+  useEffect(() => {
+    if (!gridView) incrementInstanceCount();
+
+    return () => {
+      if (!gridView) decrementInstanceCount();
+    };
+  }, [incrementInstanceCount, decrementInstanceCount, gridView]);
+
+  useEffect(() => {
+    if (isGlobalPaused) setIsPlaying(false);
+    else if (autoPlay) setIsPlaying(true);
+  }, [isGlobalPaused, autoPlay]);
+
+
 
   // Track how many instances of the component are on the page
   useEffect(() => {
@@ -204,7 +224,7 @@ const Carousel = ({
 
   // Toggle between carousel and grid views
   const toggleGridView = () => {
-    setGridView(!gridView);
+    setGridView((prev) => !prev);
   };
 
   // Handle next and previous slide actions

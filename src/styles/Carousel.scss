@@ -10,8 +10,9 @@ $dot-size: 8px;
   text-align: center;
   max-width: 1410px;
   position: relative;
-  
-  ul.carousel, ul.grid {
+
+  ul.carousel,
+  ul.grid {
     margin: 0;
     padding: 0;
     text-align: center;
@@ -78,7 +79,7 @@ $dot-size: 8px;
     .grid-item img {
       width: 100%;
       height: auto;
-      object-fit: contain;   
+      object-fit: contain;
     }
   }
 
@@ -172,4 +173,20 @@ $dot-size: 8px;
   position: absolute;
   top: auto;
   width: 1px;
+
+  &:active,
+  &:focus,
+  &:hover {
+    background-color: #fff;
+    border: 1px solid #f7f7f7;
+    box-shadow: 0 6px 20px #afafaf;
+    height: auto;
+    left: 0;
+    margin: 1rem;
+    overflow: visible;
+    padding: 1rem;
+    top: 0;
+    width: auto;
+    z-index: 4000;
+  }
 }
