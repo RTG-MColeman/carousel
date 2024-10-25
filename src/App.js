@@ -46,10 +46,10 @@ function App() {
     },
   ];
 
+  // prettier-ignore
   return (
     <CarouselProvider>
       <GlobalCarouselControls />
-
       <div className="App">
         <Carousel
           descriptionTitle="Living Room Promos"
@@ -66,72 +66,24 @@ function App() {
           showPrevNext={true} // Show Previous / Next Buttons
           showSlideDots={true} // Show the slide dot navigation
           resetOnStop={false} // Stop on current slide | reset to first
-          onTranssionEvent={({
-            slides,
-            currentSlide,
-            count,
-            stopAfter,
-            gridView,
-            isFocused,
-          }) => {
+          onTranssionEvent={({ slides, currentSlide, count, stopAfter, gridView, isFocused, }) => {
             // Perform any SEO-related tasks / analytics or additional functions you would like to apply
             console.clear();
-            console.group(
-              "%c Explination of exposed variables",
-              "background-color: #000; color: yellow; padding: 5px 10px;"
-            );
+            console.group("%c Explination of exposed variables","background-color: #000; color: yellow; padding: 5px 10px;");
             console.log("%c Variables:", "background-color: #f00; color: #fff");
-            console.log(
-              "slides:%c %o %c // Full object of the data used to build the slides",
-              "background-color: #f00; color: #fff",
-              slides,
-              "color: #0f0"
-            );
+            console.log("slides:%c %o %c // Full object of the data used to build the slides","background-color: #f00; color: #fff",slides,"color: #0f0");
             console.table(slides);
-            console.log(
-              "currentSlide:%c %s %c // Current active slide index - array[index]",
-              "background-color: #f00; color: #fff",
-              currentSlide,
-              "color: #0f0"
-            );
-            console.log(
-              "count:%c %s %c // Count of the slider's transsion during autoPlay",
-              "background-color: #f00; color: #fff",
-              count,
-              "color: #0f0"
-            );
+            console.log("currentSlide:%c %s %c // Current active slide index - array[index]","background-color: #f00; color: #fff",currentSlide,"color: #0f0");
+            console.log("count:%c %s %c // Count of the slider's transsion during autoPlay","background-color: #f00; color: #fff",count,"color: #0f0");
             console.log("\tOnly used when 'autoPlay' prop is 'true'");
-            console.log(
-              "\tWorks with the 'stopAfer' prop to prevent the carousel from looping forever"
-            );
-            console.log(
-              "stopAfter:%c %s %c // Total times slider will transsion before stopping",
-              "background-color: #f00; color: #fff",
-              stopAfter,
-              "color: #0f0"
-            );
+            console.log("\tWorks with the 'stopAfer' prop to prevent the carousel from looping forever");
+            console.log("stopAfter:%c %s %c // Total times slider will transsion before stopping","background-color: #f00; color: #fff",stopAfter,"color: #0f0");
             console.log("\tOnly used when 'autoPlay' prop is 'true'");
-            console.log(
-              "gridView:%c %s %c // Bool to check if slider has been switched to grid view",
-              "background-color: #f00; color: #fff",
-              gridView,
-              "color: #0f0"
-            );
-            console.log(
-              "\tWill disable 'count' & 'stopAfter' exposed variables in this function"
-            );
-            console.log(
-              "isFocused:%c %s %c // Is a slide currently focused?",
-              "background-color: #f00; color: #fff",
-              isFocused,
-              "color: #0f0"
-            );
-            console.log(
-              "\t'<a>' tags are the only ones in the tabindex when 'onlyImages' prop is 'true'"
-            );
-            console.log(
-              "\tHelpful if you are wanting to capture if 'keyDown' events are being triggered within the slider's container"
-            );
+            console.log("gridView:%c %s %c // Bool to check if slider has been switched to grid view","background-color: #f00; color: #fff",gridView,"color: #0f0");
+            console.log("\tWill disable 'count' & 'stopAfter' exposed variables in this function");
+            console.log("isFocused:%c %s %c // Is a slide currently focused?","background-color: #f00; color: #fff",isFocused,"color: #0f0");
+            console.log("\t'<a>' tags are the only ones in the tabindex when 'onlyImages' prop is 'true'");
+            console.log("\tHelpful if you are wanting to capture if 'keyDown' events are being triggered within the slider's container");
             console.groupEnd();
           }}
         />

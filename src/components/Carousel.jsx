@@ -25,22 +25,23 @@ const Carousel = ({
   resetOnStop = false,
   onTranssionEvent,
 }) => {
-  const uniqueId = useId(); // Automatically generates a unique ID
-  const [isFirstInstance, setIsFirstInstance] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const uniqueId = useId();
+  const [count, setCount] = useState(0);
+
   const {
     isGlobalPaused,
     isGlobalGridView,
     incrementInstanceCount,
     decrementInstanceCount,
-    toggleInstanceActiveStatus,
   } = useCarouselControl();
 
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [gridView, setGridView] = useState(isGridView);
-  const [isPlaying, setIsPlaying] = useState(autoPlay && !isGlobalPaused);
 
+  const [isFirstInstance, setIsFirstInstance] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [count, setCount] = useState(0);
+
   const slideContainer = useRef(null);
   const ariaLiveRef = useRef(null);
   const slideRefs = useRef([]);
@@ -64,27 +65,30 @@ const Carousel = ({
     if (gridView) return;
   };
 
-  // Register carousels based on gridView
+  // Register and deregister carousel instances based on the initial gridView state
   useEffect(() => {
     incrementInstanceCount();
 
-    // Clean up by decrementing on unmount
+    // On unmount, decrement the instance count
     return () => {
       decrementInstanceCount();
     };
   }, [incrementInstanceCount, decrementInstanceCount]);
-  // Respond to global grid view toggle
+
+  useEffect(() => {
+    setIsPlaying(autoPlay && !isGlobalPaused);
+  }, [isGlobalPaused, autoPlay]);
+
   useEffect(() => {
     setGridView(isGlobalGridView);
-    toggleInstanceActiveStatus(!isGlobalGridView); // Update active status based on grid view
-  }, [isGlobalGridView, toggleInstanceActiveStatus]);
+  }, [isGlobalGridView]);
 
-  // Respond to global pause state
+  // Sync carousel’s play state with global pause
   useEffect(() => {
     if (isGlobalPaused) {
-      setIsPlaying(false); // Pause if globally paused
+      setIsPlaying(false);
     } else if (autoPlay) {
-      setIsPlaying(true); // Resume autoplay if globally resumed
+      setIsPlaying(true);
     }
   }, [isGlobalPaused, autoPlay]);
 
@@ -243,13 +247,7 @@ const Carousel = ({
   };
 
   // Toggle between carousel and grid views and update the active status
-  const toggleGridView = () => {
-    setGridView((prev) => {
-      const newGridView = !prev;
-      toggleInstanceActiveStatus(!newGridView); // Update active status in global context
-      return newGridView;
-    });
-  };
+  const toggleGridView = () => setGridView((prev) => !prev);
 
   // Handle next and previous slide actions
   const handleNext = () => {

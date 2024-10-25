@@ -1,26 +1,26 @@
-// GlobalCarouselControls.js
 import React from "react";
 import { useCarouselControl } from "./CarouselContext";
 
 const GlobalCarouselControls = () => {
   const {
     activeInstanceCount,
-    isGlobalPaused,
     toggleGlobalPause,
     toggleGlobalGridView,
+    isGlobalPaused,
+    isGlobalGridView,
   } = useCarouselControl();
 
   return (
-    <>
+    <div>
       <button onClick={toggleGlobalPause}>
-        {isGlobalPaused
-          ? `Resume All (${activeInstanceCount})`
-          : `Pause All (${activeInstanceCount})`}
+        {isGlobalPaused ? "Resume All" : `Pause All (${activeInstanceCount})`}
       </button>
       <button onClick={toggleGlobalGridView}>
-        {`Switch All Carousels to Grid View (${activeInstanceCount})`}
+        {isGlobalGridView
+          ? `Switch All to Carousel View (${activeInstanceCount})`
+          : `Switch All to Grid View (${activeInstanceCount})`}
       </button>
-    </>
+    </div>
   );
 };
 
