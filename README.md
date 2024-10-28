@@ -1,6 +1,14 @@
-# RTG-Carousel
+# Carousel Component
 
-This project was created to correct several issues with accessibility when carousels are used. Some of the main features this build corrects are:
+This project contains a carousel component designed for accessibility (`a11y`) compliance and customizability through various props. It includes autoplay functionality, structured tab hierarchy, and other accessibility-focused features.
+
+
+---
+
+## Key Features
+
+### Prop-Controlled UI Features
+The component is highly customizable via props, allowing fine control over the UI.
 
 - [x] Easy SEO interjection function with exposed variables using the 'onTranssionEvent' prop
 ![Console.log info for onTranssionEvent](public/consolelog.png)
