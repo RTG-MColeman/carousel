@@ -32,6 +32,9 @@ This project was created to correct several issues with accessibility when carou
         - [x] Button - 6th: "Next Slide"
     - [x] - All navigation controls active with 'spacebar' or 'enter' keys
 
+## All a11y features have been included and then extended upon from the base of this a11y example
+[W3c Web Accessibility Initiative WAI - Working Example](https://www.w3.org/WAI/tutorials/carousels/working-example/)
+
 ## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
