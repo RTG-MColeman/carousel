@@ -63,24 +63,29 @@ const Carousel = ({
     if (gridView) return;
   };
 
-// Register and deregister carousel instances based on the initial gridView state
-useEffect(() => {
-  incrementInstanceCount(uniqueId);
-  return () => {
-    decrementInstanceCount(uniqueId);
-  };
-}, [incrementInstanceCount, decrementInstanceCount, uniqueId]);
+  // Tracking Carousel Instances (instanceCount)
+  // Purpose: Registers and unregisters carousel instances on mount and unmount.
+  useEffect(() => {
+    incrementInstanceCount(uniqueId);
+    return () => {
+      decrementInstanceCount(uniqueId);
+    };
+  }, [incrementInstanceCount, decrementInstanceCount, uniqueId]);
 
-
+  // Syncing Global Pause State
+  // Purpose: Handles changes to the isGlobalPaused state to control autoplay.
   useEffect(() => {
     setIsPlaying(autoPlay && !isGlobalPaused);
   }, [isGlobalPaused, autoPlay]);
 
+  // Updating Grid View (Global and Local Sync)
+  // Purpose: Syncs the component’s grid view state with the global grid view.
   useEffect(() => {
     setGridView(isGlobalGridView);
   }, [isGlobalGridView]);
 
   // Sync carousel’s play state with global pause
+  // Purpose: Syncs the component’s play state with the global pause all.
   useEffect(() => {
     if (isGlobalPaused) {
       setIsPlaying(false);
@@ -89,12 +94,13 @@ useEffect(() => {
     }
   }, [isGlobalPaused, autoPlay]);
 
-  // Pause or resume play based on global pause status
+  // Sync carousel’s pause / resume play state with global pause
+  // Purpose: Syncs the component’s pause / resume state with the global pause all.
   useEffect(() => {
     setIsPlaying(!isGlobalPaused && !gridView);
   }, [isGlobalPaused, gridView]);
 
-  // Track how many instances of the component are on the page
+  // Purpose: Track how many instances of the component are on the page
   useEffect(() => {
     instanceCount += 1;
 
@@ -109,15 +115,8 @@ useEffect(() => {
     };
   }, []);
 
-  // Trigger the onTranssionEvent callback when relevant values change
-  /* prettier-ignore */
-  useEffect(() => {
-    if (onTranssionEvent) {
-      onTranssionEvent({ slides, currentSlide, count, stopAfter, gridView, isFocused });
-    }
-  }, [slides, currentSlide, count, stopAfter, gridView, isFocused, onTranssionEvent]);
-
-  // Slide change logic with autoPlay and counting
+  // Handling Autoplay Timing and Counting Slides
+  // Purpose: Runs a timer when autoplay is active, incrementing slides at each interval.
   /* prettier-ignore */
   useEffect(() => {
     let intervalId;
@@ -138,7 +137,17 @@ useEffect(() => {
     return () => clearInterval(intervalId);
   }, [isPlaying, gridView, stopAfter, slides.length, slideDelayInt, announce, descriptionTitle]);
 
-  // Announce slide changes for aria-live
+  // Trigger the onTranssionEvent callback when relevant values change
+  // Purpose: Allows functional interjection points for SEO or others (currently not in use)
+  /* prettier-ignore */
+  useEffect(() => {
+    if (onTranssionEvent) {
+      onTranssionEvent({ slides, currentSlide, count, stopAfter, gridView, isFocused });
+    }
+  }, [slides, currentSlide, count, stopAfter, gridView, isFocused, onTranssionEvent]);
+
+  // Setting up ARIA-Live Announcements
+  // Purpose: Controls screen reader updates for the current slide.
   useEffect(() => {
     if (isFirstInstance && ariaLive && ariaLiveRef.current) {
       ariaLiveRef.current.textContent = `Slide ${currentSlide + 1} of ${
@@ -146,7 +155,8 @@ useEffect(() => {
       }`;
     }
 
-    // Add events to listen for CSS transition
+    // Transition Start and End Events for CSS Transitions
+    // Purpose: Adds transition event listeners for slide animations. (currently not in use)
     const container = slideContainer.current;
     const movementStart = () => {
       handleTransitionStart(currentSlide);
@@ -166,7 +176,7 @@ useEffect(() => {
     };
   }, [currentSlide, ariaLive, slides.length, isFirstInstance]);
 
-  // Listen for CSS animation start/end
+  // Listen for CSS animation start/end (currently not in use)
   const handleTransitionStart = (currentSlide) => {
     // console.log("Transition has begun!", currentSlide);
     // Do something after the transition ends
