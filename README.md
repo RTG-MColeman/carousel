@@ -1,87 +1,141 @@
-# Carousel Component
 
-This project contains a carousel component designed for accessibility (`a11y`) compliance and customizability through various props. It includes autoplay functionality, structured tab hierarchy, and other accessibility-focused features.
+# Carousel Component Documentation
 
+The Carousel component provides a highly customizable and accessible carousel that can be integrated into various parts of an application. It supports both image-only slides and complex HTML content. It also allows for a global pause/play control and a grid view toggle.
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Props](#props)
+- [Context and Global Controls](#context-and-global-controls)
+- [Functions and Callbacks](#functions-and-callbacks)
 
 ---
 
-## Key Features
+## Installation
 
-### Prop-Controlled UI Features
-The component is highly customizable via props, allowing fine control over the UI.
+Add the carousel component and supporting files to your project and import as needed.
 
-- [x] Easy SEO interjection function with exposed variables using the 'onTranssionEvent' prop
-![Console.log info for onTranssionEvent](public/consolelog.png)
+```javascript
+import Carousel from './components/Carousel';
+import { CarouselProvider } from './components/CarouselContext';
+import GlobalCarouselControls from './components/GlobalCarouselControls';
+```
 
-- [x] Prop Controled UI features
-    - [x] 'onlyImages' Used to create slides of a11y compliant banners
-    - [ ] 'cellsToShow' Used when showing multiple HTML tiles
-    - [x] 'ariaLive' Renders a container for announcing slide transissions (only works with 'autoPlay')
-    - [ ] 'isGridView' HTML slide containers that do not 'autoPlay'
-    - [x] 'showGridButton' Will turn banner sliders into stacked images for easy viewing
-    - [x] 'autoPlay' Option to have the carousel auto play slides or not
-    - [x] 'stopAfter' Option to turn off 'autoPlay' after {x} number of slides
-    - [x] 'slideDelayInt' A whole number in seconds to show each slide
-    - [x] 'showControls' Turn on/off display of Play/Pause/Prev/Next/Dots
-    - [x] 'showSlideDots' Turn on/off Dots navigation
-    - [x] 'showPrevNext' Turn on/off Previous/Next navigation
-    - [x] 'resetOnStop' When stop button is pressed resets slide back to first slide
-- [x] Autoplay is not forver. Prop created for 'stopAfter = 100' default value can change
-- [x] Global Pause / Switch to GridView "skip to" navigation in header
-- [x] Keyboard navigation including
-    - [x] Auto Stop 'onFocus' of current slide
-    - [x] Navigation Previous / Next slides with Left / Right arrow keys (when active slide is focused)
-    - [x] Structured tab higharchy controled with 'tabindex'
-        - [x] Button - 1st: "Switch to Grid View"
-        - [x] Anchor.active - 2nd: "Currently visible slide -aka- "Active"
-        - [x] Button - 3rd: "Stop / Play" toggle
-        - [x] Button - 4th: "Previous Slide" 
-        - [x] Button - 5th: "Dot Navigation" dot count per slide index
-        - [x] Button - 6th: "Next Slide"
-    - [x] - All navigation controls active with 'spacebar' or 'enter' keys
+## Usage
 
-## All a11y features have been included and then extended upon from the base of this a11y example
-[W3c Web Accessibility Initiative WAI - Working Example](https://www.w3.org/WAI/tutorials/carousels/working-example/)
+Wrap the Carousel component in a `CarouselProvider` to use the global controls and state context.
 
-## Getting Started with Create React App
+```javascript
+<CarouselProvider>
+  <GlobalCarouselControls />
+  <Carousel
+    descriptionTitle="Living Room Promos"
+    slides={livingRoomPromos}
+    autoPlay={true}
+    cellsToShow={3}
+    ariaLive={true}
+    showControls={true}
+    onTransitionEvent={/* callback function */}
+  />
+</CarouselProvider>
+```
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+## Props
 
-In the project directory, you can run:
+| Prop               | Type       | Default      | Description |
+|--------------------|------------|--------------|-------------|
+| `descriptionTitle` | `string`   | "Title"      | Accessible label for the carousel describing the content. |
+| `slides`           | `array`    | `[]`         | Array of slide objects. Each slide object should include `image`, `alt`, and optionally `href` for linking. |
+| `onlyImages`       | `boolean`  | `true`       | Indicates if slides are image-only. If `false`, slides can include HTML content. |
+| `cellsToShow`      | `number`   | `1`          | Number of items to display per slide. |
+| `ariaLive`         | `boolean`  | `true`       | Enables ARIA live region announcements for screen readers on slide change. |
+| `isGridView`       | `boolean`  | `false`      | Initial layout mode, grid or carousel. Grid mode displays slides in a grid layout without autoplay. |
+| `showGridButton`   | `boolean`  | `true`       | Toggles the display of the button that switches between grid and carousel view. |
+| `autoPlay`         | `boolean`  | `false`      | Enables automatic slide transition on component mount. |
+| `stopAfter`        | `number`   | `100`        | Number of automatic transitions before autoplay stops. |
+| `slideDelayInt`    | `number`   | `3`          | Time (in seconds) between each slide transition in autoplay mode. |
+| `showControls`     | `boolean`  | `true`       | Enables play/pause and stop controls for autoplay. |
+| `showSlideDots`    | `boolean`  | `true`       | Displays dot navigation for slides. |
+| `showPrevNext`     | `boolean`  | `true`       | Displays next and previous buttons. |
+| `resetOnStop`      | `boolean`  | `false`      | If `true`, autoplay restarts from the first slide after stopping. |
+| `onTransitionEvent`| `function` | `undefined`  | Callback function triggered on slide transition. Exposes carousel state variables. |
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Context and Global Controls
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The `CarouselProvider` manages the global carousel state, enabling features like pausing all carousels and toggling all carousels between grid and standard views.
 
-### `npm test`
+### Context Properties
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **`instanceCount`**: Total number of Carousel instances on the page.
+- **`activeInstanceCount`**: Number of active carousels currently in view (i.e., not in grid view).
+- **`isGlobalPaused`**: Boolean indicating if all carousels are paused.
+- **`isGlobalGridView`**: Boolean indicating if all carousels are in grid view.
+- **`uniqueIds`**: An array of unique IDs associated with each carousel for ARIA referencing and control linkage.
 
-### `npm run build`
+### Global Controls
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**GlobalCarouselControls** component provides the following buttons:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Pause All**: Pauses all carousels. Button text changes to `Resume All` when paused.
+- **Switch All to Grid View**: Switches all carousels to grid view. Button text changes to `Restore All to Carousel View` when all carousels are in grid view.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## Functions and Callbacks
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Global Context Functions
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. **`toggleGlobalPause()`**  
+   Pauses or resumes all carousels based on the current state.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+2. **`toggleGlobalGridView()`**  
+   Switches all carousels to grid view if they are in carousel view, and vice versa.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Local Component Callbacks
 
-## Learn More
+1. **`onTransitionEvent({ slides, currentSlide, count, stopAfter, gridView, isFocused })`**  
+   Callback triggered on each slide transition. Provides access to:
+   - `slides`: Array of slide objects.
+   - `currentSlide`: Index of the currently active slide.
+   - `count`: Number of automatic transitions made.
+   - `stopAfter`: Maximum number of automatic transitions before stopping.
+   - `gridView`: Indicates if the carousel is currently in grid view.
+   - `isFocused`: Boolean indicating if a slide is currently focused.
+
+---
+
+## Example
+
+```javascript
+<CarouselProvider>
+  <GlobalCarouselControls />
+  <Carousel
+    descriptionTitle="Dining Room Deals"
+    slides={diningRoomPromos}
+    onlyImages={true}
+    cellsToShow={3}
+    autoPlay={true}
+    slideDelayInt={5}
+    showControls={true}
+    showPrevNext={true}
+    showSlideDots={true}
+  />
+</CarouselProvider>
+```
+
+This setup initializes a `Carousel` component with autoplay enabled, 5-second transitions, and custom controls, alongside global pause and grid view controls.
+
+---
+
+## Notes
+
+- Ensure each `Carousel` component is wrapped inside a `CarouselProvider` to utilize global controls.
+- ARIA properties are implemented for screen reader compatibility, enhancing accessibility.
+- `onTransitionEvent` can be used for tracking and analytics integration based on carousel interactions.
+
