@@ -63,15 +63,14 @@ const Carousel = ({
     if (gridView) return;
   };
 
-  // Register and deregister carousel instances based on the initial gridView state
-  useEffect(() => {
-    incrementInstanceCount();
+// Register and deregister carousel instances based on the initial gridView state
+useEffect(() => {
+  incrementInstanceCount(uniqueId);
+  return () => {
+    decrementInstanceCount(uniqueId);
+  };
+}, [incrementInstanceCount, decrementInstanceCount, uniqueId]);
 
-    // On unmount, decrement the instance count
-    return () => {
-      decrementInstanceCount();
-    };
-  }, [incrementInstanceCount, decrementInstanceCount]);
 
   useEffect(() => {
     setIsPlaying(autoPlay && !isGlobalPaused);
