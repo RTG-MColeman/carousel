@@ -12,13 +12,15 @@ const GlobalCarouselControls = () => {
 
   return (
     <div>
-      <button onClick={toggleGlobalPause}>
-        {isGlobalPaused ? "Resume All" : `Pause All (${activeInstanceCount})`}
-      </button>
+      {activeInstanceCount !== 0 && (
+        <button onClick={toggleGlobalPause}>
+          {isGlobalPaused ? "Resume All" : `Pause All (${activeInstanceCount})`}
+        </button>
+      )}
       <button onClick={toggleGlobalGridView}>
         {isGlobalGridView
-          ? `Switch All to Carousel View (${activeInstanceCount})`
-          : `Switch All to Grid View (${activeInstanceCount})`}
+          ? `Restore All to Carousel View (${activeInstanceCount})`
+          : `Switch All to Grid View (${activeInstanceCount}) Instances`}
       </button>
     </div>
   );

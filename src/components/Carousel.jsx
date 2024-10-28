@@ -38,10 +38,8 @@ const Carousel = ({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [gridView, setGridView] = useState(isGridView);
-
   const [isFirstInstance, setIsFirstInstance] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-
   const slideContainer = useRef(null);
   const ariaLiveRef = useRef(null);
   const slideRefs = useRef([]);

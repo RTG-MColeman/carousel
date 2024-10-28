@@ -19,6 +19,7 @@ This project was created to correct several issues with accessibility when carou
     - [x] 'showPrevNext' Turn on/off Previous/Next navigation
     - [x] 'resetOnStop' When stop button is pressed resets slide back to first slide
 - [x] Autoplay is not forver. Prop created for 'stopAfter = 100' default value can change
+- [x] Global Pause / Switch to GridView "skip to" navigation in header
 - [x] Keyboard navigation including
     - [x] Auto Stop 'onFocus' of current slide
     - [x] Navigation Previous / Next slides with Left / Right arrow keys (when active slide is focused)
