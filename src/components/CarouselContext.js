@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback, useContext } from "react";
+import React, { createContext, useState, useCallback, useContext, useRef } from "react";
 
 const CarouselContext = createContext();
 
@@ -9,8 +9,15 @@ export const CarouselProvider = ({ children }) => {
   const [isGlobalGridView, setIsGlobalGridView] = useState(false);
   const [uniqueIds, setUniqueIds] = useState([]); // Array to track unique IDs
 
-  console.log("Initial instanceCount:", instanceCount);
-  console.log("Initial activeInstanceCount:", activeInstanceCount);
+  // Ref for the aria-live region
+  const ariaLiveRef = useRef(null);
+
+  // Function to handle announcements
+  const announce = useCallback((message) => {
+    if (ariaLiveRef.current) {
+      ariaLiveRef.current.textContent = message;
+    }
+  }, []);
 
   const incrementInstanceCount = useCallback(
     (uniqueId) => {
@@ -34,6 +41,7 @@ export const CarouselProvider = ({ children }) => {
 
   const toggleGlobalPause = useCallback(() => {
     setIsGlobalPaused((prev) => !prev);
+    announce(prev => `Carousels are now ${prev ? 'paused' : 'playing'}`);
   }, []);
 
   const toggleInstanceActiveStatus = useCallback(
@@ -47,6 +55,7 @@ export const CarouselProvider = ({ children }) => {
     setIsGlobalGridView((prev) => {
       const newState = !prev;
       setActiveInstanceCount(newState ? 0 : instanceCount);
+      announce(`All carousels switched to ${newState ? 'grid view' : 'carousel view'}`);
       return newState;
     });
   }, [instanceCount]);
@@ -64,9 +73,11 @@ export const CarouselProvider = ({ children }) => {
         toggleInstanceActiveStatus,
         toggleGlobalPause,
         toggleGlobalGridView,
+        announce // Expose announce to context
       }}
     >
       {children}
+      <div ref={ariaLiveRef} aria-live="polite" style={{ position: "absolute", left: "-9999px" }} />
     </CarouselContext.Provider>
   );
 };
