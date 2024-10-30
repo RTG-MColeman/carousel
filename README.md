@@ -72,8 +72,8 @@ The `CarouselProvider` manages the global carousel state, enabling features like
 
 ### Context Properties
 
-- **`instanceCount`**: Total number of Carousel instances on the page.
-- **`activeInstanceCount`**: Number of active carousels currently in view (i.e., not in grid view).
+- **`globalInstanceCount`**: Total number of Carousel instances on the page.
+- **`carouselActiveCount`**: Number of active carousels currently in view (i.e., not in grid view).
 - **`isGlobalPaused`**: Boolean indicating if all carousels are paused.
 - **`isGlobalGridView`**: Boolean indicating if all carousels are in grid view.
 - **`uniqueIds`**: An array of unique IDs associated with each carousel for ARIA referencing and control linkage.

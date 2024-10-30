@@ -29,8 +29,26 @@ const Carousel = ({
   const [count, setCount] = useState(0);
 
   const {
+    globalInstanceCount,
+    addGlobalInstanceCount,
+    removeGlobalInstanceCount,
+
+    carouselActiveCount,
+    addCarouselActiveCount,
+    removeCarouselActiveCount,
+    
+    carouselPauseCount,
+    addCarouselPauseCount,
+    removeCarouselPauseCount,
+
+
+
+
+
+
     isGlobalPaused,
     isGlobalGridView,
+    setInstanceCount,
     incrementInstanceCount,
     decrementInstanceCount,
   } = useCarouselControl();
@@ -51,6 +69,7 @@ const Carousel = ({
       if (e?._reactName === reactName) return;
     }
   };
+
   const announce = useCallback(
     (text) => {
       if (ariaLive && ariaLiveRef?.current) {
@@ -59,18 +78,37 @@ const Carousel = ({
     },
     [ariaLive, ariaLiveRef]
   );
+
   const disableForGrid = () => {
     if (gridView) return;
   };
 
-  // Tracking Carousel Instances (instanceCount)
-  // Purpose: Registers and unregisters carousel instances on mount and unmount.
+  // OnLoad of component:
+  // 1) Count Instances. 
+  // 2) Add Carousel or GridView Counts. 
+  // 3) Add Paused Count
   useEffect(() => {
-    incrementInstanceCount(uniqueId);
+    addGlobalInstanceCount(uniqueId);
+    if(!isGridView){
+      addCarouselActiveCount(uniqueId);
+    }
+    if(autoPlay){
+      addCarouselPauseCount(uniqueId)
+    }
+    
+    console.log("useEffect: addGlobalInstanceCount uniqueId:", uniqueId)
+
     return () => {
-      decrementInstanceCount(uniqueId);
+      removeGlobalInstanceCount(uniqueId);
+      if(isGridView){
+        removeCarouselActiveCount(uniqueId);
+      }
+      if(!autoPlay){
+        removeCarouselPauseCount(uniqueId)
+      }
+      console.log("useEffect: removeGlobalInstanceCount uniqueId:", uniqueId)
     };
-  }, [incrementInstanceCount, decrementInstanceCount, uniqueId]);
+  }, []); // Empty array ensures this runs only once on mount and unmount
 
   // Syncing Global Pause State
   // Purpose: Handles changes to the isGlobalPaused state to control autoplay.
@@ -254,7 +292,25 @@ const Carousel = ({
   };
 
   // Toggle between carousel and grid views and update the active status
-  const toggleGridView = () => setGridView((prev) => !prev);
+  const toggleLocalGridView = (uniqueId) => {
+    console.log("toggleLocalGridView:", uniqueId)
+    // // Toggle the `gridView` state
+    setGridView((prev) => {
+      const newGridView = !prev;
+
+      // Use a timeout to defer the instance count updates to the next tick
+      /* prettier-ignore */
+      taskDone(() => {
+        if (newGridView) {
+          removeCarouselActiveCount(uniqueId); // Reduce active count if switching to grid
+        } else {
+          addCarouselActiveCount(uniqueId); // Increase active count if switching back to carousel
+        }
+      }, 0, "deferInstanceCountUpdates");
+
+      return newGridView;
+    });
+  };
 
   // Handle next and previous slide actions
   const handleNext = () => {
@@ -295,7 +351,10 @@ const Carousel = ({
       {/* Grid View Toggle Button */}
       {showGridButton && (
         <div className="carousel-switch-view">
-          <button className="carousel-switch-btn" onClick={toggleGridView}>
+          <button
+            className="carousel-switch-btn"
+            onClick={() => toggleLocalGridView(uniqueId)}
+          >
             {gridView ? "Switch to Carousel View" : "Switch to Grid View"}
           </button>
         </div>

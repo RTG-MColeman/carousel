@@ -1,46 +1,66 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useCarouselControl } from "./CarouselContext";
 
 const GlobalCarouselControls = () => {
   const {
     uniqueIds,
-    instanceCount,
-    activeInstanceCount,
-    toggleGlobalPause,
-    toggleGlobalGridView,
+
     isGlobalPaused,
+    toggleGlobalPause,
+
     isGlobalGridView,
-    announce // Access announce function from context
+    toggleGlobalGridView,
+
+    globalInstanceCount,
+    addGlobalInstanceCount,
+    removeGlobalInstanceCount,
+
+    carouselActiveCount,
+    addCarouselActiveCount,
+    removeCarouselActiveCount,
+
+    carouselPauseCount,
+    addCarouselPauseCount,
+    removeCarouselPauseCount,
+
+    instanceCount,
+
+    incrementInstanceCount,
+    decrementInstanceCount,
   } = useCarouselControl();
 
   // Generate a space-separated string of IDs for aria-describedby
   const mapIdsForAria = uniqueIds.map((id) => `${id}_title`).join(" ");
 
+  useEffect(() => {
+    console.log("Updated carouselPauseCount:", carouselPauseCount);
+  }, [carouselPauseCount]); // Logs when carouselPauseCount updates
+
   return (
     <div>
-      {activeInstanceCount !== 0 && (
+      {!isGlobalGridView && (
         <button
           onClick={() => {
             toggleGlobalPause();
-            announce(`${isGlobalPaused ? "Played" : "Paused"} All (${instanceCount}) Carousel Instances`);
           }}
           aria-describedby={mapIdsForAria}
         >
-          {isGlobalPaused
-            ? `Resume All (${instanceCount})`
-            : `Pause All (${activeInstanceCount})`}
+          {isGlobalGridView || carouselPauseCount.length === 0
+            ? `Resume All Carousels Playing. Currently:(${carouselPauseCount.length}) of (${globalInstanceCount.length})`
+            : `Pause All Carousels: Currently:(${carouselPauseCount.length}) of (${globalInstanceCount.length})`}
         </button>
       )}
+
       <button
         onClick={() => {
           toggleGlobalGridView();
-          announce(`${isGlobalGridView ? "Carousel view enabled" : "Grid view enabled"} for All (${instanceCount}) Instances`);
         }}
         aria-describedby={mapIdsForAria}
       >
-        {isGlobalGridView
-          ? `Restore All to Carousel View (${instanceCount})`
-          : `Switch All to Grid View (${activeInstanceCount})`}
+        {carouselActiveCount.length === 0
+          ? "Restore All to Carousel View. Currently:"
+          : "Switch All to Grid View. Currently:"}
+        ({carouselActiveCount.length}) of ({globalInstanceCount.length})
       </button>
     </div>
   );
