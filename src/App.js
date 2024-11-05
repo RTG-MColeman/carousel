@@ -7,25 +7,25 @@ function App() {
   const livingRoomPromos = [
     {
       image:
-        "https://assets.roomstogo.com/C8_R1_Category_LR_FL_SW_1660x400.png?f=webp&cache-id=C8_R1_Category_LR_FL_SW_1660x400_e2e05cfca6",
+        "/banners/one.jpg",
       alt: "Fall Sale. Terrific rooms! Thrilling prices! Time to save! Show now",
       href: "/sales/fall/living-rooms",
     },
     {
       image:
-        "https://assets.roomstogo.com/Shaq_Content_Updated_Desktop.jpg?f=webp&cache-id=Shaq_Content_Updated_Desktop_29c45d54b7",
+        "/banners/two.jpg",
       alt: "Introducing SHAQ Recliner by Lazboy. Exclusively at Rooms To Go. Shop Now",
       href: "/furniture/product/the-shaq-black-leather-rocker-recliner/18517776",
     },
     {
       image:
-        "https://assets.roomstogo.com/sbs_lr_desktop.png?f=webp&cache-id=sbs_lr_desktop_1c963dc77f",
+        "/banners/three.jpg",
       alt: "Shop by style. Your style adventure begins here. View More",
       href: "/inspiration/shop-by-style",
     },
     {
       image:
-        "https://assets.roomstogo.com/Reclining_Category_Banner_1660x400_SE.png?f=webp&cache-id=Reclining_Category_Banner_1660x400_SE_508cc0c452",
+        "/banners/four.jpg",
       alt: "The story of reclining. Sit back. Relax. End of story. Shop Now",
       href: "/furniture/living-rooms/reclining",
     },
@@ -34,13 +34,13 @@ function App() {
   const diningRoomPromos = [
     {
       image:
-        "https://assets.roomstogo.com/Shop_By_Style_Banner_DR_Page-Desktop.png?f=webp&cache-id=Shop_By_Style_Banner_DR_Page_Desktop_8c07fd78e3",
+        "/banners/three.jpg",
       alt: "Shop By Style. Your style adventure begins here. View More",
       href: "/inspiration/shop-by-style",
     },
     {
       image:
-        "https://assets.roomstogo.com/RTG_FL_Hero_DR_DiningRoomSet_Category_VO_1660x400.png?f=webp&cache-id=RTG_FL_Hero_DR_Dining_Room_Set_Category_VO_1660x400_3c369a4bdb",
+        "/banners/four.jpg",
       alt: "Dining Room Sets. Cool or casual. Elegant or extravagant. Your new dining room awaits! Shop Now",
       href: "/furniture/dining-rooms/sets",
     },
@@ -60,7 +60,7 @@ function App() {
           isGridView={false} // Turns slides into top stacked content on load
           showGridButton={true} // Show toggle for stacked content or carousel
           autoPlay={true} // Play slides on load
-          stopAfter={25} // Stop slider after {x} only valid when autoPlay=true
+          //stopAfter={25} // Stop slider after {x} only valid when autoPlay=true
           slideDelayInt={3} // Change slides every 3 seconds
           showControls={true} // Show Play, Pause, Stop controls
           showPrevNext={true} // Show Previous / Next Buttons
