@@ -1,66 +1,81 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useCarouselControl } from "./CarouselContext";
 
 const GlobalCarouselControls = () => {
   const {
+    // hooks
+    // useAddRemoveHandlers, //removed need for add/remove{X}
+    
+    // props
+    // stopAfter = 100,
+    
+    // global variables
+    // isMobileView,
     uniqueIds,
+    // addUniqueIds,
+    // removeUniqueIds,
 
-    isGlobalPaused,
-    toggleGlobalPause,
+    // announce,
+    globalInstanceCount,
+    // addGlobalInstanceCount,
+    // removeGlobalInstanceCount,
 
     isGlobalGridView,
     toggleGlobalGridView,
 
-    globalInstanceCount,
-    addGlobalInstanceCount,
-    removeGlobalInstanceCount,
+    isGlobalPaused,
+    toggleGlobalPause,
 
-    carouselActiveCount,
-    addCarouselActiveCount,
-    removeCarouselActiveCount,
+    // carousel, paused and gridview counts
+    carouselCount,
+    // setCarouselCount,
+    // addCarouselCount,
+    // removeCarouselCount,
 
-    carouselPauseCount,
-    addCarouselPauseCount,
-    removeCarouselPauseCount,
+    pauseCount,
+    // setPauseCount,
+    // addPauseCount,
+    // removePauseCount,
 
-    instanceCount,
+    gridViewCount,
+    // setGridViewCount,
+    // addGridViewCount,
+    // removeGridViewCount,
 
-    incrementInstanceCount,
-    decrementInstanceCount,
+    // animation info
+    // autoPlay,
+    // updateAutoPlay,
+    // slideDelayInt,
+    // updateSlideDelayInt,
+    // currentSlides,
+
+
+    // controls
+    // showControls,
+    // updateShowControls,
+    // showPrevNext,
+    // updateShowPrevNext,
+    // showSlideDots,
+    // updateShowSlideDots,
   } = useCarouselControl();
 
-  // Generate a space-separated string of IDs for aria-describedby
   const mapIdsForAria = uniqueIds.map((id) => `${id}_title`).join(" ");
 
-  useEffect(() => {
-    console.log("Updated carouselPauseCount:", carouselPauseCount);
-  }, [carouselPauseCount]); // Logs when carouselPauseCount updates
-
+  // console.log("isGlobalPaused:",isGlobalPaused, "isGlobalGridView:",isGlobalGridView)
   return (
     <div>
-      {!isGlobalGridView && (
-        <button
-          onClick={() => {
-            toggleGlobalPause();
-          }}
-          aria-describedby={mapIdsForAria}
-        >
-          {isGlobalGridView || carouselPauseCount.length === 0
-            ? `Resume All Carousels Playing. Currently:(${carouselPauseCount.length}) of (${globalInstanceCount.length})`
-            : `Pause All Carousels: Currently:(${carouselPauseCount.length}) of (${globalInstanceCount.length})`}
-        </button>
-      )}
-
-      <button
-        onClick={() => {
-          toggleGlobalGridView();
-        }}
-        aria-describedby={mapIdsForAria}
-      >
-        {carouselActiveCount.length === 0
-          ? "Restore All to Carousel View. Currently:"
-          : "Switch All to Grid View. Currently:"}
-        ({carouselActiveCount.length}) of ({globalInstanceCount.length})
+      <button onClick={toggleGlobalPause} aria-describedby={mapIdsForAria}>
+        {pauseCount.length === 0
+          ? `Pause All Carousels: Currently: `
+          : `Resume All Carousels Playing. Currently:`}
+          ({carouselCount.length}) of ({carouselCount.length}) - ({isGlobalPaused.toString()})
+      </button>
+      
+      <button onClick={toggleGlobalGridView} aria-describedby={mapIdsForAria}>
+        {gridViewCount.length !== carouselCount.length
+          ? `Switch All to Grid View. Currently:`
+          : `Restore All to Carousel View. Currently:`}
+        ({gridViewCount.length}) of ({globalInstanceCount.length}) - ({isGlobalGridView.toString()})
       </button>
     </div>
   );

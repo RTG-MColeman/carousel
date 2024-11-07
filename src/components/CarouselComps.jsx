@@ -1,69 +1,180 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
+import { useCarouselControl } from "./CarouselContext";
 
-export const taskDone = (fn, time, id) => {
-  const timers = {};
-  if (typeof fn === "function") {
-    if (timers[id]) clearTimeout(timers[id]);
-    timers[id] = setTimeout(fn, time);
-  }
+
+
+
+
+export const GridViewButton = ({ uniqueId }) => {
+  const {
+    isGlobalGridView,
+    gridView,
+    addGridViewCount,
+    removeGridViewCount,
+    toggleLocalGridView,
+
+    addCarouselCount,
+    removeCarouselCount,
+  } = useCarouselControl();
+
+  const isGridView = gridView[uniqueId]; // Safely access the specific instance's state
+
+  return (
+    <div className="carousel-switch-view">
+      <button
+        className="carousel-switch-btn"
+        onClick={() => {
+          toggleLocalGridView(uniqueId);
+
+          if(isGridView){
+            removeGridViewCount(uniqueId)
+            addCarouselCount(uniqueId)
+          }else{
+            addGridViewCount(uniqueId)
+            removeCarouselCount(uniqueId)
+          }
+        }}
+      >
+        {isGlobalGridView || isGridView
+          ? "Switch to Carousel View"
+          : "Switch to Grid View"}
+      </button>
+    </div>
+  );
 };
 
-function SvgContainer({ color = "#003566", size = "24", children }) {
-  return (
-    /* prettier-ignore */
-    <svg focusable="false" role="presentation" aria-hidden="true"
-      fill={color} 
-      viewBox={`0 0 ${size} ${size}`}
-    >
-      {children}
-    </svg>
-  );
-}
 
-export const ImageSlide = ({
-  slide,
-  index,
+// export const GridViewButton = ({ uniqueId, gridView }) => {
+//   const {
+//     // global variables
+//     isGlobalGridView,
+//     toggleLocalGridView,
+//   } = useCarouselControl();
+
+//   const isGridView = gridView[uniqueId];
+//   console.log("isGridView:", isGridView)
+
+//   return (
+//     <div className="carousel-switch-view">
+//       <button
+//         className="carousel-switch-btn"
+//         onClick={(event) => {
+//           toggleLocalGridView(uniqueId);
+//         }}
+//       >
+//         {isGlobalGridView || gridView ? ("Switch to Carousel View") : ("Switch to Grid View")}
+        
+//       </button>
+//     </div>
+//   );
+// };
+
+export const CarouselListItems = ({
+  uniqueId,
+  slides,
   currentSlide,
-  gridView,
+  handleKeyDown,
   handlePlay,
   handlePause,
   handleFocus,
   handleBlur,
 }) => {
-  const [mouseDown, setMouseDown] = useState(false); // Track mouseDown state
-  const isActive = index === currentSlide;
+  const slideRefs = useRef([]);
+
+  return (
+    <div className="carousel-view">
+      <ul
+        className="carousel"
+        aria-describedby={`${uniqueId}_title carouselAdditionalInstructions`}
+      >
+        {slides.map((slide, index) => {
+          let slideClass = "";
+
+          if (index === currentSlide) {
+            slideClass = "active";
+          } else if (
+            index ===
+            (currentSlide - 1 + slides.length) % slides.length
+          ) {
+            slideClass = "previous";
+          } else if (index === (currentSlide + 1) % slides.length) {
+            slideClass = "next";
+          }
+
+          return (
+            <li
+              ref={(el) => (slideRefs.current[index] = el)}
+              key={index}
+              className={`carousel-slide ${slideClass}`}
+              onKeyDown={handleKeyDown}
+            >
+              <ImageSlide
+                currentSlide={currentSlide}
+                slide={slide}
+                index={index}
+                handlePlay={handlePlay}
+                handlePause={handlePause}
+                handleFocus={handleFocus}
+                handleBlur={handleBlur}
+              />
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
+
+export const GridlListItems = ({
+  slides,
+  currentSlide,
+  handleFocus,
+  handleBlur,
+}) => {
+  // const slideRefs = useRef([]);
+
+  return (
+    <div className="grid-view">
+      <ul className="grid">
+        {slides.map((slide, index) => (
+          <li key={index} className="grid-item">
+            <ImageSlide
+              currentSlide={currentSlide}
+              slide={slide}
+              index={index}
+              handleFocus={handleFocus}
+              handleBlur={handleBlur}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export const ImageSlide = ({ slide }) => {
+  const {
+    // global variables
+    isMobileView,
+  } = useCarouselControl();
 
   return (
     <a
       href={slide.href}
-      tabIndex={gridView ? null : isActive ? null : "-1"}
-      onMouseEnter={(event) => {
-        if (!gridView) {
-          handlePause(event);
-        }
-      }}
-      onMouseLeave={(event) => {
-        if (!gridView) {
-          handlePlay(event);
-        }
-      }}
-      onMouseDown={(event) => {
-        // Set mouseDown to true when the mouse is pressed
-        setMouseDown(true);
-      }}
-      onMouseUp={(event) => {
-        // Set mouseDown to false when the mouse is released
-        setMouseDown(false);
-      }}
-      onFocus={(event) => {
-        if (!mouseDown) {
-          // Only handle focus if the mouse isn't down
-          handleFocus(event, index, currentSlide);
-        }
-      }}
-      onBlur={handleBlur}
+      tabIndex={"-1"}
+      onMouseEnter={(event) => {}}
+      onMouseLeave={(event) => {}}
+      onMouseDown={(event) => {}}
+      onMouseUp={(event) => {}}
+      onFocus={(event) => {}}
+      onBlur={(event) => {}}
     >
-      <img src={slide.image} alt="" role="presentation" aria-hidden="true" />
+      <img
+        src={isMobileView ? slide.mobile_image : slide.full_image}
+        alt=""
+        role="presentation"
+        aria-hidden="true"
+      />
       <span className="hide508">{slide.alt}</span>
     </a>
   );
@@ -133,6 +244,7 @@ export const NextPrevControls = ({
   showPrevNext = true,
   showSlideDots = true,
 }) => {
+
   return (
     <div className="carousel-nav">
       {StopPlayButton(isPlaying, resetOnStop, handlePause, handlePlay)}
@@ -160,5 +272,25 @@ export const NextPrevControls = ({
     </div>
   );
 };
+
+export const taskDone = (fn, time, id) => {
+  const timers = {};
+  if (typeof fn === "function") {
+    if (timers[id]) clearTimeout(timers[id]);
+    timers[id] = setTimeout(fn, time);
+  }
+};
+
+function SvgContainer({ color = "#003566", size = "24", children }) {
+  return (
+    /* prettier-ignore */
+    <svg focusable="false" role="presentation" aria-hidden="true"
+      fill={color} 
+      viewBox={`0 0 ${size} ${size}`}
+    >
+      {children}
+    </svg>
+  );
+}
 
 export default SvgContainer;
