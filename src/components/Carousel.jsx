@@ -29,12 +29,10 @@ const Carousel = ({
   showPrevNext: propShowPrevNext = true,
   resetOnStop: propResetOnStop = false,
 }) => {
-
   const uniqueId = useId();
   const ariaLiveRef = useRef(null);
 
   const [count, setCount] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(propAutoPlay);
   const [currentSlide, setCurrentSlide] = useState(0);
 
 
@@ -107,26 +105,16 @@ const Carousel = ({
     updateShowSlideDots,
   } = useCarouselControl();
 
-  
-  const isInstanceGridView = gridView[uniqueId] ?? false; // Default to false if undefined
+  //use useCarouselControl variables
+  const isInstanceGridView = gridView[uniqueId] ?? false;
 
 
 
 
 
-  useEffect(() => {
-    if (typeof propGridView === 'boolean') {
-      setGridView((prev) => {
-        if (prev[uniqueId] !== propGridView) {
-          return { ...prev, [uniqueId]: propGridView };
-        }
-        return prev;
-      });
-    }
-  }, [propGridView, uniqueId]);
   
 
-  // Sync local props with global context values
+  //sync props with global
   useEffect(() => {
     updateSlideDelayInt(propSlideDelayInt);
     updateShowControls(propShowControls);
@@ -149,12 +137,7 @@ const Carousel = ({
   ]);
 
 
-useEffect(() => {
-  setGridView((prev) => ({
-    ...prev,
-    [uniqueId]: prev[uniqueId] ?? false, // Ensure entry exists
-  }));
-}, [uniqueId]);
+
 
 
   
@@ -171,9 +154,6 @@ useEffect(() => {
 
     if(propAutoPlay && !propGridView){
       addCarouselCount(uniqueId)
-      // if (!autoPlay[uniqueId]) {
-      //   updateAutoPlay(uniqueId, !autoPlay[uniqueId])
-      // }
     }
     if(!propAutoPlay && !propGridView){
       addPauseCount(uniqueId)
@@ -182,8 +162,6 @@ useEffect(() => {
     if(propGridView){
       addGridViewCount(uniqueId)
     }
-
-
 
     return () => {
       removeUniqueIds(uniqueId)
@@ -200,12 +178,29 @@ useEffect(() => {
       }
       
     };
-  }, []); // Empty array ensures this runs only once on mount and unmount
+  }, []); //empty[] to run once
 
 
 
 
-
+  useEffect(() => {
+    //force gridview entry
+    setGridView((prev) => ({
+      ...prev,
+      [uniqueId]: prev[uniqueId] ?? false,
+    }));
+  }, [uniqueId]);
+  
+  useEffect(() => {
+    if (typeof propGridView === 'boolean') {
+      setGridView((prev) => {
+        if (prev[uniqueId] !== propGridView) {
+          return { ...prev, [uniqueId]: propGridView };
+        }
+        return prev;
+      });
+    }
+  }, [propGridView, uniqueId]);
 
 
 
@@ -223,102 +218,39 @@ useEffect(() => {
   // Purpose: Runs a timer when autoplay is active, incrementing slides at each interval.
   const hasMounted = useRef(false);
   /* prettier-ignore */
-  //TODO: working here
   useEffect(() => {
-    
-  
     if (propAutoPlay && !propGridView && !isGlobalGridView) {
-      console.log("useEffect running with currentSlide:", currentSlide);
   
       const intervalId = setInterval(() => {
         setCurrentSlide((prev) => {
           const newSlideIndex = (prev + 1) % propSlides.length;
           
-          // Check if the component has mounted to safely update currentSlides
+          //has component mounted to safely update currentSlides
           if (hasMounted.current) {
             setTimeout(() => {
               setCurrentSlides((prevSlides) => {
                 if (prevSlides[uniqueId] !== newSlideIndex) {
-                  console.log("Directly updating current slides in useEffect for uniqueId:", uniqueId);
                   return { ...prevSlides, [uniqueId]: newSlideIndex };
                 }
                 return prevSlides;
               });
-            }, 0); // Defer state update to avoid updating during render
+            }, 0); //delay state update to avoid updating during render
           }
   
           return newSlideIndex;
         });
       }, propSlideDelayInt * 1000);
   
-      // Mark as mounted after the first render cycle
+      //mark as mounted after the first render
       hasMounted.current = true;
   
-      // Cleanup function to clear the interval when the component unmounts or dependencies change
+      //clear timer when unmounts
       return () => clearInterval(intervalId);
     }
   }, [propAutoPlay, propGridView, isGlobalGridView, uniqueId, propSlides, currentSlide, propSlideDelayInt]);
   
   
-  // HAS CONSOLE ERROR
-  // useEffect(() => {
-  //   let mounted = true; // Assume the component is mounted
   
-  //   let intervalId;
-  //   if (propAutoPlay && !propGridView && !isGlobalGridView) {
-  //     intervalId = setInterval(() => {
-  //       if (mounted) {
-  //         setCurrentSlide((prev) => {
-  //           const newSlideIndex = (prev + 1) % propSlides.length;
-  
-  //           if (!propGridView && !isGlobalGridView) {
-  //             updateCurrentSlide(uniqueId, newSlideIndex);
-  //           }
-  
-  //           return newSlideIndex;
-  //         });
-  
-  //         setCount((prevCount) => {
-  //           const newCount = prevCount + 1;
-  //           if (newCount >= propStopAfter) {
-  //             setIsPlaying(false); // Stop autoPlay after reaching the limit
-  //             clearInterval(intervalId);
-  //           }
-  //           return newCount;
-  //         });
-  //       }
-  //     }, propSlideDelayInt * 1000);
-  //   }
-  
-  //   // Cleanup function to clear the interval when component unmounts or conditions change
-  //   return () => {
-  //     mounted = false; // Mark as unmounted
-  //     if (intervalId) clearInterval(intervalId);
-  //   };
-  // }, [propAutoPlay, propGridView, isGlobalGridView, uniqueId, propSlides, propStopAfter, propSlideDelayInt]);
-  
-  
-  // useEffect(() => {
-  //   let intervalId;
-
-  //   if(propAutoPlay && !propGridView){
-  //     intervalId = setInterval(() => {
-  //       setCurrentSlide((prev) => (prev + 1) % propSlides.length);
-  //       setCount((prevCount) => {
-  //         const newCount = prevCount + 1;
-  //         if (newCount >= propStopAfter) {
-  //           setIsPlaying(false); // Stop autoPlay after 100 transitions
-  //           // announce(`Carousel for ${descriptionTitle} Stopped`);
-  //         }
-  //         return newCount;
-  //       });
-  //     }, propSlideDelayInt * 1000);
-  
-  //     return () => clearInterval(intervalId);
-  //   }
-  // }, [propAutoPlay, propGridView, propSlides, propDescriptionTitle, propStopAfter, propSlideDelayInt,]);
-
-
 
 
 
@@ -357,22 +289,7 @@ useEffect(() => {
 
 
 
-
-
-// TODO: commented out to fix console error - NEEDED?
-  // Sync currentSlide with the global context whenever it changes
-  // Prevent useEffect from updating state continuously
-  // useEffect(() => {
-  //   if (currentSlides[uniqueId] !== currentSlide) {
-  //     updateCurrentSlide(uniqueId, currentSlide);
-  //   }
-  // }, [uniqueId, currentSlide, currentSlides, updateCurrentSlide]);
-
-
   
-
-
-
 
 
 
@@ -412,7 +329,7 @@ useEffect(() => {
         <GridViewButton uniqueId={uniqueId} gridView={propGridView} />
       )}
       
-      {isGlobalGridView || isInstanceGridView ? (
+      {isInstanceGridView ? (
         <GridlListItems
           uniqueId={uniqueId}
           slides={propSlides}

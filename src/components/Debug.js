@@ -82,6 +82,8 @@ export const Debug = () => {
             // global variables
             //working: isMobileView,
             //working: uniqueIds,
+            autoPlay,
+            //working: slideDelayInt,
 
 
 
@@ -99,9 +101,9 @@ export const Debug = () => {
             gridViewCount,
 
             // animation info
-            autoPlay,
+            
             // updateAutoPlay,
-            slideDelayInt,
+            
             // updateSlideDelayInt,
             currentSlides,
 

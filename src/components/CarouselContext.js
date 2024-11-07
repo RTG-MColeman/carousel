@@ -8,11 +8,12 @@ export const CarouselProvider = ({ children }) => {
   const [uniqueIds, setUniqueIds] = useState([]);
   const [globalInstanceCount, setGlobalInstanceCount] = useState([]);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 639);
+  const [isGlobalGridView, setGlobalGridView] = useState(false);
 
 
 
   const [isGlobalPaused, setGlobalPaused] = useState(false);
-  const [isGlobalGridView, setGlobalGridView] = useState(false);
+  
 
 
 
@@ -27,21 +28,19 @@ export const CarouselProvider = ({ children }) => {
 
   // Track props per instance
   const [currentSlides, setCurrentSlides] = useState({});
-// TODO: working here
-const updateCurrentSlide = (uniqueId, slideIndex, propGridView) => {
-  console.log("updateCurrentSlide called during:", new Date(), "with uniqueId:", uniqueId);
-  if (propGridView) {
-    return; // Prevent state update if in grid view
-  }
 
-  setCurrentSlides((prev) => {
-    if (prev[uniqueId] !== slideIndex) {
-      console.log("Updating current slide for uniqueId:", uniqueId, "to slideIndex:", slideIndex);
-      return { ...prev, [uniqueId]: slideIndex };
+  const updateCurrentSlide = (uniqueId, slideIndex, propGridView) => {
+    if (propGridView) {
+      return; // Prevent state update if in grid view
     }
-    return prev;
-  });
-};
+
+    setCurrentSlides((prev) => {
+      if (prev[uniqueId] !== slideIndex) {
+        return { ...prev, [uniqueId]: slideIndex };
+      }
+      return prev;
+    });
+  };
 
 
 
@@ -108,7 +107,7 @@ const updateCurrentSlide = (uniqueId, slideIndex, propGridView) => {
 
 
 
-// TODO: NEW effort
+
   useEffect(() => {
     if (gridViewCount.length === globalInstanceCount.length) {
       setGlobalGridView(true);
@@ -200,8 +199,6 @@ const updateCurrentSlide = (uniqueId, slideIndex, propGridView) => {
 
 
 
-
-// TODO: working here
 const toggleGlobalGridView = () => {
   setGlobalGridView((prev) => {
     if (!prev) {
@@ -288,7 +285,6 @@ const toggleGlobalGridView = () => {
   // LEAVE LAST SO UPDATE HAPPENS AFTER FUNCTIONS
   const updateGridView = useCallback((value) => {
     if (typeof value !== 'object' || value === null) {
-      console.error("updateGridView expects an object. Received:", value);
       return;
     }
     setGridView((prev) => ({
