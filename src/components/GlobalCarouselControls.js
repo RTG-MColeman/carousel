@@ -72,10 +72,10 @@ const GlobalCarouselControls = () => {
       </button>
       
       <button onClick={toggleGlobalGridView} aria-describedby={mapIdsForAria}>
-        {gridViewCount.length !== carouselCount.length
-          ? `Switch All to Grid View. Currently:`
-          : `Restore All to Carousel View. Currently:`}
-        ({gridViewCount.length}) of ({globalInstanceCount.length}) - ({isGlobalGridView.toString()})
+        {isGlobalGridView
+          ? `Restore All to Carousel View. Currently: `
+          : `Switch All to Grid View. Currently: `}
+        ({gridViewCount.length}) of ({globalInstanceCount.length})
       </button>
     </div>
   );

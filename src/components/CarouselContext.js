@@ -10,21 +10,9 @@ export const CarouselProvider = ({ children }) => {
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 639);
   const [isGlobalGridView, setGlobalGridView] = useState(false);
 
-
-
   const [isGlobalPaused, setGlobalPaused] = useState(false);
-  
-
-
-
 
   const [autoPlay, setAutoPlay] = useState({});
-
-
-
-
-
-
 
   // Track props per instance
   const [currentSlides, setCurrentSlides] = useState({});
@@ -42,22 +30,7 @@ export const CarouselProvider = ({ children }) => {
     });
   };
 
-
-
-  // const updateCurrentSlide = (uniqueId, slideIndex) => {
-  //   setCurrentSlides((prev) => {
-  //     if (prev[uniqueId] !== slideIndex) {
-  //       return { ...prev, [uniqueId]: slideIndex };
-  //     }
-  //     return prev; // Avoid state update if value hasn't changed
-  //   });
-  // };
-
-
-
-
   const [gridView, setGridView] = useState({});
-
 
   const [slideDelayInt, setSlideDelayInt] = useState(3);
   const [showControls, setShowControls] = useState(true);
@@ -66,7 +39,6 @@ export const CarouselProvider = ({ children }) => {
   const [gridViewCount, setGridViewCount] = useState([]);
   const [pauseCount, setPauseCount] = useState([]);
   const [carouselCount, setCarouselCount] = useState([]);
-  
 
   // Update isMobileView when the window resizes
   useEffect(() => {
@@ -88,25 +60,10 @@ export const CarouselProvider = ({ children }) => {
     }
   }, []);
 
-
-
-
-
-
   // Handlers for state updates
   const toggleGlobalPause = useCallback(() => {
     setGlobalPaused((prev) => !prev);
   }, []);
-
-
-
-
-
-
-
-
-
-
 
   useEffect(() => {
     if (gridViewCount.length === globalInstanceCount.length) {
@@ -115,7 +72,7 @@ export const CarouselProvider = ({ children }) => {
       setGlobalGridView(false);
     }
   }, [gridViewCount, globalInstanceCount]);
-  
+
   useEffect(() => {
     if (pauseCount.length === globalInstanceCount.length) {
       setGlobalPaused(true);
@@ -123,16 +80,6 @@ export const CarouselProvider = ({ children }) => {
       setGlobalPaused(false);
     }
   }, [pauseCount, globalInstanceCount]);
-
-
-
-
-
-
-
-
-
-
 
   // Custom hook to create add and remove handlers
   const useAddRemoveHandlers = (setter, state) => {
@@ -158,7 +105,7 @@ export const CarouselProvider = ({ children }) => {
   // Usage of custom hook:useAddRemoveHandlers
   const { addHandler: addUniqueIds, removeHandler: removeUniqueIds } =
     useAddRemoveHandlers(setUniqueIds, uniqueIds);
-    
+
   const {
     addHandler: addGlobalInstanceCount,
     removeHandler: removeGlobalInstanceCount,
@@ -173,118 +120,61 @@ export const CarouselProvider = ({ children }) => {
   const { addHandler: addGridViewCount, removeHandler: removeGridViewCount } =
     useAddRemoveHandlers(setGridViewCount, gridViewCount);
 
+  const toggleGlobalGridView = () => {
+    setGlobalGridView((prev) => {
+      if (!prev) {
+        // Turn all instances ON: Populate pauseCount and gridViewCount, and empty carouselCount
+        setCarouselCount([]); // Empty the carouselCount array
+        setPauseCount(globalInstanceCount); // Populate with all uniqueIds to mark as paused
+        setGridViewCount(globalInstanceCount); // Populate with all uniqueIds to mark as grid view
 
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const toggleGlobalGridView = () => {
-  setGlobalGridView((prev) => {
-    if (!prev) {
-      // Turn all instances ON: Populate pauseCount and gridViewCount, and empty carouselCount
-      setCarouselCount([]); // Empty the carouselCount array
-      setPauseCount(globalInstanceCount); // Populate with all uniqueIds to mark as paused
-      setGridViewCount(globalInstanceCount); // Populate with all uniqueIds to mark as grid view
-
-      // Update the gridView state for each uniqueId
-      setGridView((prevGrid) => {
-        const newGridView = {};
-        globalInstanceCount.forEach((id) => {
-          newGridView[id] = true; // Set each instance to grid view
+        // Update the gridView state for each uniqueId
+        setGridView((prevGrid) => {
+          const newGridView = {};
+          globalInstanceCount.forEach((id) => {
+            newGridView[id] = true; // Set each instance to grid view
+          });
+          return newGridView;
         });
-        return newGridView;
-      });
 
-      return true; // Set isGlobalGridView to true
-    } else {
-      // Turn all instances OFF: Empty pauseCount and gridViewCount, and populate carouselCount
-      setPauseCount([]); // Clear the pauseCount array
-      setGridViewCount([]); // Clear the gridViewCount array
-      setCarouselCount(globalInstanceCount); // Populate with all uniqueIds to mark as carousel view
+        return true; // Set isGlobalGridView to true
+      } else {
+        // Turn all instances OFF: Empty pauseCount and gridViewCount, and populate carouselCount
+        setPauseCount([]); // Clear the pauseCount array
+        setGridViewCount([]); // Clear the gridViewCount array
+        setCarouselCount(globalInstanceCount); // Populate with all uniqueIds to mark as carousel view
 
-      // Update the gridView state for each uniqueId
-      setGridView((prevGrid) => {
-        const newGridView = {};
-        globalInstanceCount.forEach((id) => {
-          newGridView[id] = false; // Set each instance to carousel view
+        // Update the gridView state for each uniqueId
+        setGridView((prevGrid) => {
+          const newGridView = {};
+          globalInstanceCount.forEach((id) => {
+            newGridView[id] = false; // Set each instance to carousel view
+          });
+          return newGridView;
         });
-        return newGridView;
-      });
 
-      return false; // Set isGlobalGridView to false
-    }
-  });
-};
+        return false; // Set isGlobalGridView to false
+      }
+    });
+  };
 
+  const toggleLocalGridView = (uniqueId) => {
+    setGridView((prev) => {
+      const newGridState = { ...prev, [uniqueId]: !prev[uniqueId] };
+      return newGridState;
+    });
 
-    
-
-
-    
-    const toggleLocalGridView = (uniqueId) => {
-      setGridView((prev) => {
-        const newGridState = { ...prev, [uniqueId]: !prev[uniqueId] };
-        return newGridState;
-      });
-    
-      setPauseCount((prev) =>
+    setPauseCount(
+      (prev) =>
         !prev.includes(uniqueId)
           ? [...prev, uniqueId] // Add if switching to grid view
           : prev.filter((id) => id !== uniqueId) // Remove if switching back to carousel
-      );
-    };
-    
- 
-    
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    );
+  };
 
   // LEAVE LAST SO UPDATE HAPPENS AFTER FUNCTIONS
   const updateGridView = useCallback((value) => {
-    if (typeof value !== 'object' || value === null) {
+    if (typeof value !== "object" || value === null) {
       return;
     }
     setGridView((prev) => ({
@@ -293,7 +183,6 @@ const toggleGlobalGridView = () => {
     }));
   }, []);
 
-  
   const updateSlideDelayInt = (value) => setSlideDelayInt(value);
   const updateShowControls = (value) => setShowControls(value);
   const updateShowSlideDots = (value) => setShowSlideDots(value);
@@ -347,10 +236,8 @@ const toggleGlobalGridView = () => {
         setGridView,
         updateGridView,
 
-
         // animation info
         autoPlay,
-
 
         slideDelayInt,
         updateSlideDelayInt,
@@ -367,12 +254,14 @@ const toggleGlobalGridView = () => {
         updateShowSlideDots,
       }}
     >
+      <>
+        <span ref={ariaLiveRef} className="hide508" aria-live="polite"></span>
+        <span id="carouselAdditionalInstructions" className="hide508">
+          Use arrow keys to navigate between slides.
+        </span>
+      </>
+
       {children}
-      <div
-        ref={ariaLiveRef}
-        aria-live="polite"
-        style={{ position: "absolute", left: "-9999px" }}
-      />
     </CarouselContext.Provider>
   );
 };

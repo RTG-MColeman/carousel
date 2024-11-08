@@ -312,17 +312,6 @@ const Carousel = ({
       <span id={`${uniqueId}_title`} className="hide508">
         {propDescriptionTitle}
       </span>
-
-      {/* ARIA live region for announcements */}
-      TODO: Make sure this renders only once with the first control
-      {propAriaLive && (
-        <>
-          <span className="hide508" aria-live="polite" ref={ariaLiveRef}></span>
-          <span id="carouselAdditionalInstructions" className="hide508">
-            Use arrow keys to navigate between slides.
-          </span>
-        </>
-      )}
       
       {/* Grid View Toggle Button */}
       {propShowSwitch && (

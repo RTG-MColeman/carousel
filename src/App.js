@@ -1,7 +1,7 @@
 import React from "react";
 import { CarouselProvider } from "./components/CarouselContext";
-import Carousel from "./components/Carousel";
 import GlobalCarouselControls from "./components/GlobalCarouselControls";
+import Carousel from "./components/Carousel";
 import { Debug } from "./components/Debug";
 
 function App() {
