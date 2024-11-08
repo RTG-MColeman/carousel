@@ -12,18 +12,8 @@ const Carousel = ({
   onTranssionEvent: propOnTranssionEvent,
   stopAfter: propStopAfter = 100,
   gridView: propGridView = false,
-
-
-
-
-
-  ariaLive: propAriaLive = true,
-  
   autoPlay: propAutoPlay = true,
-
-  
-
-  
+  ariaLive: propAriaLive = true,
   showControls: propShowControls = true,
   showSlideDots: propShowSlideDots = true,
   showPrevNext: propShowPrevNext = true,
@@ -35,69 +25,28 @@ const Carousel = ({
   const [count, setCount] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-
-
-
-
-
-
-
-
-
   const {
-    // hooks
-    // useAddRemoveHandlers, //removed need for add/remove{X}
-    
-    // props
-    // stopAfter = 100,
-
-    // global variables
-    // isMobileView,
-    // uniqueIds,
     addUniqueIds,
     removeUniqueIds,
-
-    // announce,
-    // globalInstanceCount,
     addGlobalInstanceCount,
     removeGlobalInstanceCount,
-
     isGlobalGridView,
-    // toggleGlobalGridView,
-
-    // isGlobalPaused,
-    // toggleGlobalPause,
-
-    // carousel, paused and gridview counts
-    // carouselCount,
-    // setCarouselCount,
     addCarouselCount,
     removeCarouselCount,
-
-    // pauseCount,
-    // setPauseCount,
+    playingStatus, 
+    setPlayingStatus,
+    autoPlay,
+    addPlayCount,
+    pauseCount,
     addPauseCount,
     removePauseCount,
-
     gridView,
-    // gridViewCount,
-    // setGridViewCount,
     setGridView,
+    updateGridView,
     addGridViewCount,
     removeGridViewCount,
-
-    // animation info
-    // autoPlay, 
-    // updateAutoPlay,
-    updateGridView,
-    // slideDelayInt,
     updateSlideDelayInt,
-    currentSlides,
     setCurrentSlides,
-    updateCurrentSlide,
-
-    // controls
-    // showControls,
     updateShowControls,
     showPrevNext,
     updateShowPrevNext,
@@ -107,13 +56,9 @@ const Carousel = ({
 
   //use useCarouselControl variables
   const isInstanceGridView = gridView[uniqueId] ?? false;
-
-
-
-
+  const isPlaying = playingStatus[uniqueId] && !pauseCount.includes(uniqueId);
 
   
-
   //sync props with global
   useEffect(() => {
     updateSlideDelayInt(propSlideDelayInt);
@@ -128,7 +73,6 @@ const Carousel = ({
     propShowControls,
     propShowSlideDots,
     propShowPrevNext,
-    // updateAutoPlay,
     updateGridView,
     updateSlideDelayInt,
     updateShowControls,
@@ -137,10 +81,14 @@ const Carousel = ({
   ]);
 
 
+useEffect(() => {
+  if (!playingStatus[uniqueId] && autoPlay) {
+    // Set the initial play state to true if autoPlay is true and not yet set
+    setPlayingStatus((prev) => ({ ...prev, [uniqueId]: true }));
+  }
+}, [uniqueId, autoPlay, setPlayingStatus]);
 
 
-
-  
   
 
 
@@ -154,6 +102,7 @@ const Carousel = ({
 
     if(propAutoPlay && !propGridView){
       addCarouselCount(uniqueId)
+      addPlayCount(uniqueId)
     }
     if(!propAutoPlay && !propGridView){
       addPauseCount(uniqueId)
@@ -179,6 +128,19 @@ const Carousel = ({
       
     };
   }, []); //empty[] to run once
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -217,15 +179,13 @@ const Carousel = ({
   // Handling Autoplay Timing and Counting Slides
   // Purpose: Runs a timer when autoplay is active, incrementing slides at each interval.
   const hasMounted = useRef(false);
-  /* prettier-ignore */
+
   useEffect(() => {
-    if (propAutoPlay && !propGridView && !isGlobalGridView) {
-  
+    if (propAutoPlay && !propGridView && !isGlobalGridView && isPlaying) {
       const intervalId = setInterval(() => {
         setCurrentSlide((prev) => {
           const newSlideIndex = (prev + 1) % propSlides.length;
-          
-          //has component mounted to safely update currentSlides
+
           if (hasMounted.current) {
             setTimeout(() => {
               setCurrentSlides((prevSlides) => {
@@ -234,23 +194,19 @@ const Carousel = ({
                 }
                 return prevSlides;
               });
-            }, 0); //delay state update to avoid updating during render
+            }, 0);
           }
-  
+
           return newSlideIndex;
         });
       }, propSlideDelayInt * 1000);
-  
-      //mark as mounted after the first render
+
       hasMounted.current = true;
-  
-      //clear timer when unmounts
+
       return () => clearInterval(intervalId);
     }
-  }, [propAutoPlay, propGridView, isGlobalGridView, uniqueId, propSlides, currentSlide, propSlideDelayInt]);
-  
-  
-  
+  }, [isPlaying, propAutoPlay, propGridView, isGlobalGridView, uniqueId, propSlides, propSlideDelayInt, pauseCount]);
+
 
 
 
@@ -289,16 +245,11 @@ const Carousel = ({
 
 
 
-  
-
-
 
 
 
   // HANDLE EVENTS
   const handleKeyDown = (event) => {}
-  const handlePlay = (event) => {}
-  const handlePause = (event) => {}
   const handleFocus = (event) => {}
   const handleBlur = (event) => {}
 
@@ -320,15 +271,7 @@ const Carousel = ({
       
       {isInstanceGridView ? (
         <GridlListItems
-          uniqueId={uniqueId}
           slides={propSlides}
-          currentSlide={currentSlide}
-          propGridView={propGridView}
-          handleKeyDown={handleKeyDown}
-          handlePlay={handlePlay}
-          handlePause={handlePause}
-          handleFocus={handleFocus}
-          handleBlur={handleBlur}
         />
       ) : (
         <CarouselListItems
@@ -337,8 +280,6 @@ const Carousel = ({
           currentSlide={currentSlide}
           propGridView={propGridView}
           handleKeyDown={handleKeyDown}
-          handlePlay={handlePlay}
-          handlePause={handlePause}
           handleFocus={handleFocus}
           handleBlur={handleBlur}
         />
@@ -347,13 +288,13 @@ const Carousel = ({
       {/* Carousel Previous Play/Pause {dots} Next */}
       {!isInstanceGridView && (
         <NextPrevControls
+          uniqueId={uniqueId}
+          isPlaying={isPlaying}
           slides={propSlides}
           resetOnStop={propResetOnStop}
           currentSlide={currentSlide}
           showPrevNext={showPrevNext}
           showSlideDots={showSlideDots}
-          handlePause={handlePause}
-          handlePlay={handlePlay}
           handlePrev={handlePrev}
           handleNext={handleNext}
           handleDotClick={handleDotClick}

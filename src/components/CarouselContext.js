@@ -6,39 +6,31 @@ const CarouselContext = createContext();
 export const CarouselProvider = ({ children }) => {
   // Centralized state management
   const [uniqueIds, setUniqueIds] = useState([]);
-  const [globalInstanceCount, setGlobalInstanceCount] = useState([]);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 639);
+  const [globalInstanceCount, setGlobalInstanceCount] = useState([]);
+  const [carouselCount, setCarouselCount] = useState([]);
+
+  //grid views
+  const [gridView, setGridView] = useState({});
+  const [gridViewCount, setGridViewCount] = useState([]);
   const [isGlobalGridView, setGlobalGridView] = useState(false);
 
+  //paused views
+  const [pauseCount, setPauseCount] = useState([]);
   const [isGlobalPaused, setGlobalPaused] = useState(false);
 
+  //play views
   const [autoPlay, setAutoPlay] = useState({});
+  const [playCount, setPlayCount] = useState([]);
 
-  // Track props per instance
-  const [currentSlides, setCurrentSlides] = useState({});
-
-  const updateCurrentSlide = (uniqueId, slideIndex, propGridView) => {
-    if (propGridView) {
-      return; // Prevent state update if in grid view
-    }
-
-    setCurrentSlides((prev) => {
-      if (prev[uniqueId] !== slideIndex) {
-        return { ...prev, [uniqueId]: slideIndex };
-      }
-      return prev;
-    });
-  };
-
-  const [gridView, setGridView] = useState({});
-
-  const [slideDelayInt, setSlideDelayInt] = useState(3);
   const [showControls, setShowControls] = useState(true);
   const [showSlideDots, setShowSlideDots] = useState(true);
   const [showPrevNext, setShowPrevNext] = useState(true);
-  const [gridViewCount, setGridViewCount] = useState([]);
-  const [pauseCount, setPauseCount] = useState([]);
-  const [carouselCount, setCarouselCount] = useState([]);
+
+  //slides
+
+  const [currentSlides, setCurrentSlides] = useState({});
+  const [slideDelayInt, setSlideDelayInt] = useState(3);
 
   // Update isMobileView when the window resizes
   useEffect(() => {
@@ -52,17 +44,26 @@ export const CarouselProvider = ({ children }) => {
     };
   }, []);
 
+  //slide views
+  const updateCurrentSlide = (uniqueId, slideIndex, propGridView) => {
+    if (propGridView) {
+      return; // Prevent state update if in grid view
+    }
+
+    setCurrentSlides((prev) => {
+      if (prev[uniqueId] !== slideIndex) {
+        return { ...prev, [uniqueId]: slideIndex };
+      }
+      return prev;
+    });
+  };
+
   // Utility function for announcements
   const ariaLiveRef = useRef(null);
   const announce = useCallback((message) => {
     if (ariaLiveRef.current) {
       ariaLiveRef.current.textContent = message;
     }
-  }, []);
-
-  // Handlers for state updates
-  const toggleGlobalPause = useCallback(() => {
-    setGlobalPaused((prev) => !prev);
   }, []);
 
   useEffect(() => {
@@ -120,6 +121,23 @@ export const CarouselProvider = ({ children }) => {
   const { addHandler: addGridViewCount, removeHandler: removeGridViewCount } =
     useAddRemoveHandlers(setGridViewCount, gridViewCount);
 
+  const { addHandler: addPlayCount, removeHandler: removePlayCount } =
+    useAddRemoveHandlers(setPlayCount, pauseCount);
+
+  const toggleGlobalPause = useCallback(() => {
+    setGlobalPaused((prev) => {
+      if (!prev) {
+        // Pause all carousels
+        setPauseCount(globalInstanceCount);
+        return true;
+      } else {
+        // Resume all carousels
+        setPauseCount([]); // Clear the paused list
+        return false;
+      }
+    });
+  }, [globalInstanceCount]);
+
   const toggleGlobalGridView = () => {
     setGlobalGridView((prev) => {
       if (!prev) {
@@ -158,6 +176,29 @@ export const CarouselProvider = ({ children }) => {
     });
   };
 
+  // Add a new state to manage play status per uniqueId
+  const [playingStatus, setPlayingStatus] = useState(() => {
+    const initialStatus = {};
+    uniqueIds.forEach((id) => {
+      initialStatus[id] = true; // Set initial state to true (playing) or false as needed
+    });
+    return initialStatus;
+  });
+
+  const toggleLocalPlayPause = (uniqueId) => {
+    setPlayingStatus((prev) => {
+      const newStatus = { ...prev, [uniqueId]: !prev[uniqueId] };
+      return newStatus;
+    });
+
+    setPauseCount(
+      (prev) =>
+        !prev.includes(uniqueId)
+          ? [...prev, uniqueId] // Add to pause if it's not in the array
+          : prev.filter((id) => id !== uniqueId) // Remove from pause if resuming
+    );
+  };
+
   const toggleLocalGridView = (uniqueId) => {
     setGridView((prev) => {
       const newGridState = { ...prev, [uniqueId]: !prev[uniqueId] };
@@ -194,9 +235,6 @@ export const CarouselProvider = ({ children }) => {
         // hooks
         useAddRemoveHandlers, //removed need for add/remove{X}
 
-        // props
-        // stopAfter = 100,
-
         // global variables
         isMobileView,
         uniqueIds,
@@ -210,17 +248,25 @@ export const CarouselProvider = ({ children }) => {
 
         isGlobalGridView,
         toggleGlobalGridView,
-
         toggleLocalGridView,
-
-        isGlobalPaused,
-        toggleGlobalPause,
 
         // carousel, paused and gridview counts
         carouselCount,
         setCarouselCount,
         addCarouselCount,
         removeCarouselCount,
+
+        playingStatus,
+        toggleLocalPlayPause,
+
+        isGlobalPaused,
+        toggleGlobalPause,
+
+        autoPlay,
+        setPlayCount,
+        addPlayCount,
+        removePlayCount,
+        setPlayingStatus,
 
         pauseCount,
         setPauseCount,
@@ -235,9 +281,6 @@ export const CarouselProvider = ({ children }) => {
         gridView,
         setGridView,
         updateGridView,
-
-        // animation info
-        autoPlay,
 
         slideDelayInt,
         updateSlideDelayInt,
@@ -266,4 +309,12 @@ export const CarouselProvider = ({ children }) => {
   );
 };
 
-export const useCarouselControl = () => useContext(CarouselContext);
+export const useCarouselControl = () => {
+  const context = useContext(CarouselContext);
+  if (!context) {
+    throw new Error(
+      "useCarouselControl must be used within a CarouselProvider"
+    );
+  }
+  return context;
+};

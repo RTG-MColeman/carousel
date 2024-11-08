@@ -1,9 +1,5 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useCarouselControl } from "./CarouselContext";
-
-
-
-
 
 export const GridViewButton = ({ uniqueId }) => {
   const {
@@ -26,12 +22,12 @@ export const GridViewButton = ({ uniqueId }) => {
         onClick={() => {
           toggleLocalGridView(uniqueId);
 
-          if(isGridView){
-            removeGridViewCount(uniqueId)
-            addCarouselCount(uniqueId)
-          }else{
-            addGridViewCount(uniqueId)
-            removeCarouselCount(uniqueId)
+          if (isGridView) {
+            removeGridViewCount(uniqueId);
+            addCarouselCount(uniqueId);
+          } else {
+            addGridViewCount(uniqueId);
+            removeCarouselCount(uniqueId);
           }
         }}
       >
@@ -42,32 +38,6 @@ export const GridViewButton = ({ uniqueId }) => {
     </div>
   );
 };
-
-
-// export const GridViewButton = ({ uniqueId, gridView }) => {
-//   const {
-//     // global variables
-//     isGlobalGridView,
-//     toggleLocalGridView,
-//   } = useCarouselControl();
-
-//   const isGridView = gridView[uniqueId];
-//   console.log("isGridView:", isGridView)
-
-//   return (
-//     <div className="carousel-switch-view">
-//       <button
-//         className="carousel-switch-btn"
-//         onClick={(event) => {
-//           toggleLocalGridView(uniqueId);
-//         }}
-//       >
-//         {isGlobalGridView || gridView ? ("Switch to Carousel View") : ("Switch to Grid View")}
-        
-//       </button>
-//     </div>
-//   );
-// };
 
 export const CarouselListItems = ({
   uniqueId,
@@ -125,12 +95,7 @@ export const CarouselListItems = ({
   );
 };
 
-export const GridlListItems = ({
-  slides,
-  currentSlide,
-  handleFocus,
-  handleBlur,
-}) => {
+export const GridlListItems = ({ slides }) => {
   // const slideRefs = useRef([]);
 
   return (
@@ -138,13 +103,7 @@ export const GridlListItems = ({
       <ul className="grid">
         {slides.map((slide, index) => (
           <li key={index} className="grid-item">
-            <ImageSlide
-              currentSlide={currentSlide}
-              slide={slide}
-              index={index}
-              handleFocus={handleFocus}
-              handleBlur={handleBlur}
-            />
+            <ImageSlide slide={slide} index={index} />
           </li>
         ))}
       </ul>
@@ -180,24 +139,14 @@ export const ImageSlide = ({ slide }) => {
   );
 };
 
-export const StopPlayButton = (
-  isPlaying,
-  resetOnStop,
-  handlePause,
-  handlePlay
-) => {
-  const buttonLabel = () => {
-    if (isPlaying) {
-      return resetOnStop ? "Stop and reset" : "Stop";
-    }
-    return "Play";
-  };
+//TODO: working here Ai
+export const StopPlayButton = ({ uniqueId }) => {
+  const { playingStatus, toggleLocalPlayPause } = useCarouselControl();
+  const isPlaying =
+    playingStatus[uniqueId] !== undefined ? playingStatus[uniqueId] : false;
+
   return (
-    <button
-      onClick={() => {
-        isPlaying ? handlePause() : handlePlay();
-      }}
-    >
+    <button onClick={() => toggleLocalPlayPause(uniqueId)}>
       <SvgContainer>
         {isPlaying ? (
           <path d="M4.5 4.5h15v15h-15z" />
@@ -205,7 +154,7 @@ export const StopPlayButton = (
           <path d="M6 19.5v-15L18 12 6 19.5Z" />
         )}
       </SvgContainer>
-      <span className="hide508">{buttonLabel()}</span>
+      <span className="hide508">{isPlaying ? "Stop" : "Play"}</span>
     </button>
   );
 };
@@ -232,6 +181,7 @@ export const DotControls = (slides, currentSlide, handleDotClick) => {
 };
 
 export const NextPrevControls = ({
+  uniqueId,
   isPlaying,
   resetOnStop,
   handlePause,
@@ -244,10 +194,15 @@ export const NextPrevControls = ({
   showPrevNext = true,
   showSlideDots = true,
 }) => {
-
   return (
     <div className="carousel-nav">
-      {StopPlayButton(isPlaying, resetOnStop, handlePause, handlePlay)}
+      <StopPlayButton
+        uniqueId={uniqueId}
+        isPlaying={isPlaying}
+        resetOnStop={resetOnStop}
+        handlePlay={handlePlay}
+        handlePause={handlePause}
+      />
 
       {showPrevNext && (
         <button onClick={handlePrev}>
@@ -292,5 +247,14 @@ function SvgContainer({ color = "#003566", size = "24", children }) {
     </svg>
   );
 }
+
+// //TODO: working here
+// const preventEvent = (e, reactName, useCount = false) => {
+//   if (useCount) {
+//     if (count >= propStopAfter && e?._reactName === reactName) return;
+//   } else {
+//     if (e?._reactName === reactName) return;
+//   }
+// };
 
 export default SvgContainer;

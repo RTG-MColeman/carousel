@@ -72,12 +72,12 @@ function App() {
           gridView={false} // Turns slides into top stacked content on load
 
 
-
+          autoPlay={true} // Play slides on load
 
 
           ariaLive={true} // 508 Announce slide change
 
-          autoPlay={true} // Play slides on load
+          
           
 
 
