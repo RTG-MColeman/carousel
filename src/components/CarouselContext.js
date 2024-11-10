@@ -171,19 +171,25 @@ export const CarouselProvider = ({ children }) => {
     return initialStatus;
   });
 
-const toggleLocalPlayPause = useCallback((uniqueId) => {
-  setPlayingStatus((prev) => {
-    const newStatus = { ...prev, [uniqueId]: !prev[uniqueId] };
-    return newStatus;
-  });
+  const toggleLocalPlayPause = useCallback(
+    (uniqueId) => {
+      setPlayingStatus((prev) => {
+        const newStatus = { ...prev, [uniqueId]: !prev[uniqueId] };
+        return newStatus;
+      });
 
-  setPauseCount((prev) =>
-    !prev.includes(uniqueId)
-      ? [...prev, uniqueId] // Add to pause if it's not in the array
-      : prev.filter((id) => id !== uniqueId) // Remove from pause if resuming
+      setPauseCount((prev) => {
+        if (prev.includes(uniqueId)) {
+          // Remove from pauseCount if resuming
+          return prev.filter((id) => id !== uniqueId);
+        } else {
+          // Add to pauseCount if pausing
+          return [...prev, uniqueId];
+        }
+      });
+    },
+    [setPlayingStatus, setPauseCount]
   );
-}, [setPlayingStatus, setPauseCount]);
-
 
   const toggleLocalGridView = (uniqueId) => {
     setGridView((prev) => {
@@ -202,19 +208,32 @@ const toggleLocalPlayPause = useCallback((uniqueId) => {
   const toggleGlobalPause = useCallback(() => {
     setGlobalPaused((prev) => {
       if (!prev) {
-        //pause all carousels
-        setPauseCount(globalInstanceCount);
+        // Pause all carousels
+        setPlayingStatus((prevStatus) => {
+          const updatedStatus = { ...prevStatus };
+          globalInstanceCount.forEach((id) => {
+            updatedStatus[id] = false; // Set all to paused
+          });
+          return updatedStatus;
+        });
+
+        setPauseCount(globalInstanceCount); // Add all uniqueIds to pauseCount
         return true;
       } else {
-        //resume all carousels
-        globalInstanceCount.forEach((id) => {
-          toggleLocalPlayPause(id); //resume local carousel
+        // Resume all carousels
+        setPlayingStatus((prevStatus) => {
+          const updatedStatus = { ...prevStatus };
+          globalInstanceCount.forEach((id) => {
+            updatedStatus[id] = true; // Set all to playing
+          });
+          return updatedStatus;
         });
-        setPauseCount([]); //clear paused array
+
+        setPauseCount([]); // Clear the paused array
         return false;
       }
     });
-  }, [globalInstanceCount, toggleLocalPlayPause]);
+  }, [globalInstanceCount, setPlayingStatus]);
 
   // LEAVE LAST SO UPDATE HAPPENS AFTER FUNCTIONS
   const updateGridView = useCallback((value) => {
