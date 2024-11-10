@@ -88,7 +88,7 @@ export const Debug = () => {
 
 
             // announce,
-            //working: globalInstanceCount,
+            globalInstanceCount,
 
 
             isGlobalGridView,

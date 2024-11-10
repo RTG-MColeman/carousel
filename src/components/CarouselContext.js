@@ -124,20 +124,6 @@ export const CarouselProvider = ({ children }) => {
   const { addHandler: addPlayCount, removeHandler: removePlayCount } =
     useAddRemoveHandlers(setPlayCount, pauseCount);
 
-  const toggleGlobalPause = useCallback(() => {
-    setGlobalPaused((prev) => {
-      if (!prev) {
-        // Pause all carousels
-        setPauseCount(globalInstanceCount);
-        return true;
-      } else {
-        // Resume all carousels
-        setPauseCount([]); // Clear the paused list
-        return false;
-      }
-    });
-  }, [globalInstanceCount]);
-
   const toggleGlobalGridView = () => {
     setGlobalGridView((prev) => {
       if (!prev) {
@@ -185,19 +171,19 @@ export const CarouselProvider = ({ children }) => {
     return initialStatus;
   });
 
-  const toggleLocalPlayPause = (uniqueId) => {
-    setPlayingStatus((prev) => {
-      const newStatus = { ...prev, [uniqueId]: !prev[uniqueId] };
-      return newStatus;
-    });
+const toggleLocalPlayPause = useCallback((uniqueId) => {
+  setPlayingStatus((prev) => {
+    const newStatus = { ...prev, [uniqueId]: !prev[uniqueId] };
+    return newStatus;
+  });
 
-    setPauseCount(
-      (prev) =>
-        !prev.includes(uniqueId)
-          ? [...prev, uniqueId] // Add to pause if it's not in the array
-          : prev.filter((id) => id !== uniqueId) // Remove from pause if resuming
-    );
-  };
+  setPauseCount((prev) =>
+    !prev.includes(uniqueId)
+      ? [...prev, uniqueId] // Add to pause if it's not in the array
+      : prev.filter((id) => id !== uniqueId) // Remove from pause if resuming
+  );
+}, [setPlayingStatus, setPauseCount]);
+
 
   const toggleLocalGridView = (uniqueId) => {
     setGridView((prev) => {
@@ -208,10 +194,27 @@ export const CarouselProvider = ({ children }) => {
     setPauseCount(
       (prev) =>
         !prev.includes(uniqueId)
-          ? [...prev, uniqueId] // Add if switching to grid view
-          : prev.filter((id) => id !== uniqueId) // Remove if switching back to carousel
+          ? [...prev, uniqueId] //add if switching to grid view
+          : prev.filter((id) => id !== uniqueId) //remove if switching back to carousel
     );
   };
+
+  const toggleGlobalPause = useCallback(() => {
+    setGlobalPaused((prev) => {
+      if (!prev) {
+        //pause all carousels
+        setPauseCount(globalInstanceCount);
+        return true;
+      } else {
+        //resume all carousels
+        globalInstanceCount.forEach((id) => {
+          toggleLocalPlayPause(id); //resume local carousel
+        });
+        setPauseCount([]); //clear paused array
+        return false;
+      }
+    });
+  }, [globalInstanceCount, toggleLocalPlayPause]);
 
   // LEAVE LAST SO UPDATE HAPPENS AFTER FUNCTIONS
   const updateGridView = useCallback((value) => {

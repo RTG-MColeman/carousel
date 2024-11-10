@@ -141,14 +141,14 @@ export const ImageSlide = ({ slide }) => {
 
 //TODO: working here Ai
 export const StopPlayButton = ({ uniqueId }) => {
-  const { playingStatus, toggleLocalPlayPause } = useCarouselControl();
+  const { playingStatus, toggleLocalPlayPause, isGlobalPaused} = useCarouselControl();
   const isPlaying =
     playingStatus[uniqueId] !== undefined ? playingStatus[uniqueId] : false;
 
   return (
     <button onClick={() => toggleLocalPlayPause(uniqueId)}>
       <SvgContainer>
-        {isPlaying ? (
+        {isPlaying && !isGlobalPaused ? (
           <path d="M4.5 4.5h15v15h-15z" />
         ) : (
           <path d="M6 19.5v-15L18 12 6 19.5Z" />
